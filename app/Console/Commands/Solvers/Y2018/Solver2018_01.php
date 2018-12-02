@@ -40,7 +40,7 @@ class Solver2018_01 extends Command
     public function handle()
     {
         //
-        $input = new SplFileObject(storage_path('app/input/2018/day01/input'));
+        $input = new SplFileObject(storage_path('app/input/2018/day01/input.dat'));
         $input->setFlags(SplFileObject::DROP_NEW_LINE);
         echo $this->calc($input) . PHP_EOL;
     }
