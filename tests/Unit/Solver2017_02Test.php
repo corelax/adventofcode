@@ -27,4 +27,19 @@ class Solver2017_02Test extends TestCase
 			'2	4	6	8',
         ]), 18);
     }
+
+    public function testSolvePart2()
+    {
+		// change test data to tsv
+        $this->assertEquals($this->solver->solvePart2([
+			'5	9	2	8',
+			'9	4	7	3',
+			'3	8	6	5',
+        ]), 9);
+
+		// contains same numbers
+        $this->assertEquals($this->solver->solvePart2([
+			'3	2	3',
+        ]), 1);
+    }
 }

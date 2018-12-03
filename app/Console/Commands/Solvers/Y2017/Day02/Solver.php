@@ -2,6 +2,8 @@
 
 namespace App\Console\Commands\Solvers\Y2017\Day02;
 
+use Illuminate\Support\Collection;
+
 class Solver
 {
     public function solvePart1(iterable $input)
@@ -14,5 +16,36 @@ class Solver
         }
 
         return $sum;
+    }
+
+    public function solvePart2(iterable $input)
+    {
+        // MEMO: to find the only two numbers in each row
+        $sum = 0;
+
+        foreach ($input as $row) {
+            $coll = explode("\t", $row);
+            $sum += $this->getDiv($coll);
+        }
+
+        return $sum;
+    }
+
+    private function getDiv(array $arr)
+    {
+        foreach ($arr as $curr) {
+            foreach ($arr as $target) {
+                if ($curr == $target) {
+                    continue;
+                }
+
+                if ($target % $curr == 0) {
+                    return $target / $curr;
+                }
+            }
+        }
+
+        // assume there are same numbers;
+        return 1;
     }
 }
