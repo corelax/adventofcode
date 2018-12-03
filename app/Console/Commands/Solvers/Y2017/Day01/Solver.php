@@ -19,4 +19,20 @@ class Solver
 
         return $sum;
     }
+
+    public function solvePart2(string $input)
+    {
+        $sum = 0;
+
+        $arr = str_split($input);
+        $half = count($arr) / 2;
+
+        for ($i = 0; $i < $half; $i++) {
+            if ($arr[$i] == $arr[$i + $half]) {
+                $sum += intval($arr[$i]) * 2;
+            }
+        }
+
+        return $sum;
+    }
 }

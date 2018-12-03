@@ -26,4 +26,13 @@ class Solver2017_01Test extends TestCase
         $this->assertEquals($this->solver->solvePart1('1234'    ), 0);
         $this->assertEquals($this->solver->solvePart1('91212129'), 9);
     }
+
+    public function testSolvePart2()
+    {
+        $this->assertEquals($this->solver->solvePart2('1212'    ), 6 ); 
+        $this->assertEquals($this->solver->solvePart2('1221'    ), 0 ); 
+        $this->assertEquals($this->solver->solvePart2('123425'  ), 4 ); 
+        $this->assertEquals($this->solver->solvePart2('123123'  ), 12); 
+        $this->assertEquals($this->solver->solvePart2('12131415'), 4 ); 
+    }
 }
