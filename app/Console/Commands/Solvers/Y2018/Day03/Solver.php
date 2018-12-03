@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands\Solvers\Y2018\Day03;
 
-use SeekableIterator;
+use Iterator;
 
 class Solver
 {
@@ -51,7 +51,7 @@ class Solver
             }
         }
 
-        if ($input instanceof SeekableIterator) {
+        if ($input instanceof Iterator) {
             $input->rewind();
         }
     }
