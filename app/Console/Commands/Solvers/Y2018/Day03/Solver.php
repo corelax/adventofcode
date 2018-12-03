@@ -21,6 +21,18 @@ class Solver
         return $result;
     }
 
+    public function solvePart2(iterable $input)
+    {
+        $this->createWantedMap($input);
+
+        foreach ($input as $line) {
+            sscanf($line, "#%d @ %d,%d: %dx%d", $id, $posX, $posY, $w, $h);
+            if (!$this->isOverrapped($posX, $posY, $w, $h)) {
+                return $id;
+            }
+        }
+    }
+
     private function createWantedMap(iterable $input)
     {
         $this->wantedMap = [];
@@ -42,5 +54,19 @@ class Solver
         if ($input instanceof SeekableIterator) {
             $input->rewind();
         }
+    }
+
+    private function isOverrapped($posX, $posY, $w, $h)
+    {
+        for ($x = $posX; $x < $posX + $w; $x++) {
+            for ($y = $posY; $y < $posY + $h; $y++) {
+                $key = "{$x}:{$y}";
+                if ($this->wantedMap[$key] >= 2) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 }
