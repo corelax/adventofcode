@@ -23,6 +23,7 @@ class Solver
 
     private function createWantedMap(iterable $input)
     {
+        $this->wantedMap = [];
         foreach ($input as $line) {
             sscanf($line, "#%d @ %d,%d: %dx%d", $id, $posX, $posY, $w, $h);
 
@@ -36,6 +37,10 @@ class Solver
                     }
                 }
             }
+        }
+
+        if ($input instanceof SeekableIterator) {
+            $input->rewind();
         }
     }
 }
