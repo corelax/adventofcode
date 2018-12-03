@@ -2,8 +2,6 @@
 
 namespace App\Console\Commands\Solvers\Y2017\Day02;
 
-use Illuminate\Support\Collection;
-
 class Solver
 {
     public function solvePart1(iterable $input)
@@ -24,8 +22,8 @@ class Solver
         $sum = 0;
 
         foreach ($input as $row) {
-            $coll = explode("\t", $row);
-            $sum += $this->getDiv($coll);
+            $arr = explode("\t", $row);
+            $sum += $this->getDiv($arr);
         }
 
         return $sum;
