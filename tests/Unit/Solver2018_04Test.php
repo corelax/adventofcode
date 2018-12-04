@@ -57,6 +57,13 @@ class Solver2018_04Test extends TestCase
         $this->assertEquals($solver->solvePart1($this->testData), 240);
     }
 
+    public function testSolvePart2()
+    {
+        $solver = new Solver();
+
+        $this->assertEquals($solver->solvePart2($this->testData), 4455);
+    }
+
     private $testData = [
         '[1518-11-01 00:00] Guard #10 begins shift',
         '[1518-11-01 00:05] falls asleep',

@@ -37,6 +37,30 @@ class Solver
         return $mostSleptId * $theMinute;
     }
 
+    public function solvePart2(iterable $input)
+    {
+        $data = $this->regularData($input);
+        $sleepMemory = $this->createSleepMemory($data);
+
+        $theMinute = null;
+        $theGuard = null;
+        $max = 0;
+        foreach ($sleepMemory as $guard => $memory) {
+            if (max($memory) > $max) {
+                $max = max($memory);
+
+                $theGuard = $guard;
+                foreach ($memory as $minute => $times) {
+                    if ($times == $max) {
+                        $theMinute = $minute;
+                    }
+                }
+            }
+        }
+
+        return $theGuard * $theMinute;
+    }
+
     private function createSleepMemory(iterable $data) {
         $sleepMemory = [];
 
