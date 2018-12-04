@@ -12,7 +12,32 @@ class Solver
     public function solvePart1(iterable $input)
     {
         $data = $this->regularData($input);
+        $sleepMemory = $this->createSleepMemory($data);
 
+        $mostSleptId = null;
+        $mostSleptMinutes = 0;
+        foreach ($sleepMemory as $guard => $memory) {
+            Log::info("ID $guard : " . array_sum($memory) . " minutes");
+            $sleptMinutes = array_sum($memory);
+            if ($sleptMinutes > $mostSleptMinutes) {
+                $mostSleptMinutes = $sleptMinutes;
+                $mostSleptId = $guard;
+            }
+        }
+
+        $theMinute = null;
+        $maxTimes = 0;
+        foreach ($sleepMemory[$mostSleptId] as $minute => $times) {
+            if ($times > $maxTimes) {
+                $maxTimes = $times;
+                $theMinute = $minute;
+            }
+        }
+
+        return $mostSleptId * $theMinute;
+    }
+
+    private function createSleepMemory(iterable $data) {
         $sleepMemory = [];
 
         $guard = null;
@@ -63,27 +88,7 @@ class Solver
             }
         }
 
-        $mostSleptId = null;
-        $mostSleptMinutes = 0;
-        foreach ($sleepMemory as $guard => $memory) {
-            Log::info("ID $guard : " . array_sum($memory) . " minutes");
-            $sleptMinutes = array_sum($memory);
-            if ($sleptMinutes > $mostSleptMinutes) {
-                $mostSleptMinutes = $sleptMinutes;
-                $mostSleptId = $guard;
-            }
-        }
-
-        $theMinute = null;
-        $maxTimes = 0;
-        foreach ($sleepMemory[$mostSleptId] as $minute => $times) {
-            if ($times > $maxTimes) {
-                $maxTimes = $times;
-                $theMinute = $minute;
-            }
-        }
-
-        return $mostSleptId * $theMinute;
+        return $sleepMemory;
     }
 
     private function regularData(iterable $input)
