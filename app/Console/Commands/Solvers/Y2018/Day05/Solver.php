@@ -22,8 +22,7 @@ class Solver
         $list = [];
         for ($i = 0; $i < 26; $i++) {
             $data = $input1passed;
-            $data = str_replace($listC[$i], '', $data);
-            $data = str_replace($listS[$i], '', $data);
+            $data = str_replace([$listC[$i], $listS[$i]], '', $data);
             $data = $this->react($data);
 
             if (strlen($data) < $min) {
@@ -47,16 +46,12 @@ class Solver
             $list[] = $listS[$i] . $listC[$i];
         }
 
-        do {
-            $changed = false;
-
-            foreach ($list as $react) {
-                $data = str_replace($react, '', $data, $count);
-                if ($count !== 0) {
-                    $changed = true;
-                }
+        while(true) {
+            $data = str_replace($list, '', $data, $count);
+            if ($count === 0) {
+                break;
             }
-        } while ($changed);
+        } 
 
         return $data;
     }
