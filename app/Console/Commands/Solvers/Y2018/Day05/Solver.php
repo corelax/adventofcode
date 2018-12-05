@@ -49,10 +49,47 @@ class Solver
 
     private function react(string $data)
     {
+        return $this->react2($data);
+    }
+
+    private function react1(string $data)
+    {
         do {
             $data = str_replace($this->reactPairs, '', $data, $count);
         } while($count);
 
         return $data;
+    }
+
+    private function react2(string $data)
+    {
+        $remainPos = [];
+        for ($n = 0, $m = 1; $m < strlen($data); ) {
+            if (abs(ord($data[$n]) - ord($data[$m])) == 0x20) {
+                $data[$n] = $data[$m] = '.';
+                if (! empty($remainPos)) {
+                    // data:a..bcd
+                    //       nm 
+                    //      n  m
+                    $n = array_pop($remainPos);
+                    $m++;
+                } else {
+                    // data:...bcd
+                    //       nm 
+                    //         nm 
+                    $n = $m + 1;
+                    $m += 2;
+                }
+            } else {
+                // data:apqbcd
+                //       nm 
+                //        nm 
+                array_push($remainPos, $n);
+                $n = $m;
+                $m++;
+            }
+        }
+
+        return str_replace('.', '', $data);
     }
 }
