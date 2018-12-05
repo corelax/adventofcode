@@ -13,14 +13,15 @@ class Solver
 
     public function solvePart2(string $input)
     {
+        $input1passed = $this->react($input);
         $listC = range('A', 'Z');
         $listS = range('a', 'z');
 
-        $min = strlen($input);
+        $min = strlen($input1passed);
         // Aa, aA, Bb, bB, ... zZ
         $list = [];
         for ($i = 0; $i < 26; $i++) {
-            $data = $input;
+            $data = $input1passed;
             $data = str_replace($listC[$i], '', $data);
             $data = str_replace($listS[$i], '', $data);
             $data = $this->react($data);
