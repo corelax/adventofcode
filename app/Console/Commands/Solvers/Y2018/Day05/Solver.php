@@ -4,6 +4,12 @@ namespace App\Console\Commands\Solvers\Y2018\Day05;
 
 class Solver
 {
+    private $reactPairs = [];
+
+    public function __construct() {
+        $this->reactPairs = $this->makeReactPairs();
+    }
+
     public function solvePart1(string $input)
     {
         $data = $this->react($input);
@@ -14,15 +20,11 @@ class Solver
     public function solvePart2(string $input)
     {
         $input1passed = $this->react($input);
-        $listC = range('A', 'Z');
-        $listS = range('a', 'z');
 
         $min = strlen($input1passed);
-        // Aa, aA, Bb, bB, ... zZ
-        $list = [];
-        for ($i = 0; $i < 26; $i++) {
+        foreach(range('a', 'z') as $char) {
             $data = $input1passed;
-            $data = str_replace([$listC[$i], $listS[$i]], '', $data);
+            $data = str_replace([$char, strtoupper($char)], '', $data);
             $data = $this->react($data);
 
             if (strlen($data) < $min) {
@@ -33,25 +35,23 @@ class Solver
         return $min;
     }
 
-    private function react(string $input)
+    // Aa, aA, Bb, bB, ... zZ
+    private function makeReactPairs()
     {
-        $data = $input;
-        $listC = range('A', 'Z');
-        $listS = range('a', 'z');
-
-        // Aa, aA, Bb, bB, ... zZ
-        $list = [];
-        for ($i = 0; $i < 26; $i++) {
-            $list[] = $listC[$i] . $listS[$i];
-            $list[] = $listS[$i] . $listC[$i];
+        $pairs = [];
+        foreach(range('a', 'z') as $char) {
+            $pairs[] = strtoupper($char) . $char;
+            $pairs[] = $char . strtoupper($char);
         }
 
-        while(true) {
-            $data = str_replace($list, '', $data, $count);
-            if ($count === 0) {
-                break;
-            }
-        } 
+        return $pairs;
+    }
+
+    private function react(string $data)
+    {
+        do {
+            $data = str_replace($this->reactPairs, '', $data, $count);
+        } while($count);
 
         return $data;
     }
