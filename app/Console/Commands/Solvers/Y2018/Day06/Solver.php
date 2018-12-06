@@ -140,6 +140,7 @@ class Solver
         return $idList;
     }
 
+    // check if total distance from every coordinates to ($x, $y) LESS THAN $limit
     private function isInTotalDistance($coordinates, $x, $y, $limit)
     {
         $total = 0;
