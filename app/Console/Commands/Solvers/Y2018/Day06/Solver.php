@@ -20,10 +20,10 @@ class Solver
 
         // area which get the coordinate on border is infinite area
         // we can consider only the inner area of the border
-        $borderL = min($xList) - 1;
-        $borderR = max($xList) + 1;
-        $borderT = min($yList) - 1;
-        $borderB = max($yList) + 1;
+        $borderL = min($xList);
+        $borderR = max($xList);
+        $borderT = min($yList);
+        $borderB = max($yList);
 
         // echo "$borderL $borderR $borderT $borderB\n";
 
