@@ -36,10 +36,10 @@ class Solver
                 $key = "$x,$y";
                 if (count($areaIdList) >= 2) {
                     $nearestMap[$key] = '.';
-                    echo '.';
+                    // echo '.';
                 } else {
                     $nearestMap[$key] = $areaIdList[0];
-                    echo chr(ord('A') + $nearestMap[$key]);
+                    // echo chr(ord('A') + $nearestMap[$key]);
                 }
 
                 if ($x == $borderL || $x == $borderR || $y == $borderT || $y == $borderB) {
@@ -48,7 +48,7 @@ class Solver
                     }
                 }
             }
-            echo PHP_EOL;
+            // echo PHP_EOL;
         }
 
         // echo "infinits are ";
