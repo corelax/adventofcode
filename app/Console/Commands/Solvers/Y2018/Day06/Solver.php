@@ -76,6 +76,43 @@ class Solver
         return $maxArea;
     }
 
+    public function solvePart2(iterable $input, $limit)
+    {
+        $coordinates = [];
+        $maxX = $maxY = 0;
+        $minX = $minY = PHP_INT_MAX;
+
+        $xList = $yList = [];
+        foreach ($input as $line) {
+            sscanf($line, "%d, %d", $x, $y);
+            $coordinates[] = [$x, $y];
+            $xList[] = $x;
+            $yList[] = $y;
+        }
+
+        // area which get the coordinate on border is infinite area
+        // we can consider only the inner area of the border
+        $borderL = min($xList) - 1;
+        $borderR = max($xList) + 1;
+        $borderT = min($yList) - 1;
+        $borderB = max($yList) + 1;
+
+        // echo "$borderL $borderR $borderT $borderB\n";
+
+        $infinits = [];
+        $nearestMap = [];
+        $regionSize = 0;
+        foreach (range($borderT, $borderB) as $y) {
+            foreach (range($borderL, $borderR) as $x) {
+                if ($this->isInTotalDistance($coordinates, $x, $y, $limit)) {
+                    $regionSize++;
+                }
+            }
+        }
+
+        return $regionSize;
+    }
+
     private function distance($x1, $y1, $x2, $y2)
     {
         return abs($x2 - $x1) + abs($y2 - $y1);
@@ -101,5 +138,19 @@ class Solver
         }
         // echo "$x $y owned by $txt\n";
         return $idList;
+    }
+
+    private function isInTotalDistance($coordinates, $x, $y, $limit)
+    {
+        $total = 0;
+        foreach ($coordinates as $coordinate) {
+            $total += $this->distance($x, $y, $coordinate[0], $coordinate[1]);
+
+            if ($total >= $limit) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

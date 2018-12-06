@@ -45,5 +45,6 @@ class Main extends Command
 
         $solver = new Solver();
         echo "part1 : " . $solver->solvePart1($input) . PHP_EOL;
+        echo "part2 : " . $solver->solvePart2($input, 10000) . PHP_EOL;
     }
 }

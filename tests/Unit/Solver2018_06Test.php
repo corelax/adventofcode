@@ -37,4 +37,18 @@ class Solver2018_06Test extends TestCase
             "8, 9",
         ]));
     }
+
+    public function testSolvePart2()
+    {
+        $solver = new Solver();
+
+        $this->assertEquals(16, $solver->solvePart2([
+            "1, 1",
+            "1, 6",
+            "8, 3",
+            "3, 4",
+            "5, 5",
+            "8, 9",
+        ], 32));
+    }
 }
