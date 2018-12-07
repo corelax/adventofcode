@@ -45,5 +45,6 @@ class Main extends Command
 
         $solver = new Solver();
         echo "part1 : " . $solver->solvePart1($input) . PHP_EOL;
+        echo "part2 : " . implode(', ', $solver->solvePart2($input, 5, 60)) . PHP_EOL;
     }
 }
