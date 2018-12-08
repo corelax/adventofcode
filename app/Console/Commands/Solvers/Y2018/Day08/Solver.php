@@ -35,10 +35,7 @@ class Solver
 
     private function sumMetadata($node)
     {
-        $sum = 0;
-        if (is_array($node['metadata'])) {
-            $sum += array_sum($node['metadata']);
-        }
+        $sum = array_sum($node['metadata']);
 
         foreach ($node['children'] as $child) {
             $sum += $this->sumMetadata($child);
@@ -50,15 +47,13 @@ class Solver
     private function getNodeValue($node)
     {
         $value = 0;
-        if ($node['count'] == 0) {
+        if (empty($node['children'])) {
             return $this->sumMetadata($node);
         }
 
-        if (is_array($node['metadata'])) {
-            foreach ($node['metadata'] as $meta) {
-                if (isset($node['children'][$meta - 1])) {
-                    $value += $this->getNodeValue($node['children'][$meta - 1]);
-                }
+        foreach ($node['metadata'] as $meta) {
+            if (isset($node['children'][$meta - 1])) {
+                $value += $this->getNodeValue($node['children'][$meta - 1]);
             }
         }
 
@@ -70,11 +65,10 @@ class Solver
         $consume = 0;
         $node = $this->createNode();
 
-        $node['count'] = $arr[$start + $consume++];
-
+        $count     = $arr[$start + $consume++];
         $metaCount = $arr[$start + $consume++];
 
-        for ($i = 0; $i < $node['count']; $i++) {
+        for ($i = 0; $i < $count; $i++) {
             list($child, $subConsume) = $this->takeNode($arr, $start + $consume);
             $node['children'][] = $child;
             $consume += $subConsume;
@@ -90,7 +84,6 @@ class Solver
     private function createNode()
     {
         return [
-            'count' => 0,
             'children' => [],
             'metadata' => [],
         ];
