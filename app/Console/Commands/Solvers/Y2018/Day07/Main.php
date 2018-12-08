@@ -20,7 +20,7 @@ class Main extends Command
      *
      * @var string
      */
-    protected $description = 'Day 6: Chronal Coordinates';
+    protected $description = 'Day 7: The Sum of Its Parts';
 
     /**
      * Create a new command instance.
