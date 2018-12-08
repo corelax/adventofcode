@@ -21,6 +21,18 @@ class Solver
         return $this->sumMetadata($tree);
     }
 
+    public function solvePart2(string $input)
+    {
+        $this->init();
+
+        $nodeStack = [];
+
+        $inputArray = explode(' ', $input);
+        list($tree, $consume) = $this->takeNode($inputArray, 0);
+
+        return $this->getNodeValue($tree);
+    }
+
     private function sumMetadata($node)
     {
         $sum = 0;
@@ -33,6 +45,24 @@ class Solver
         }
 
         return $sum;
+    }
+
+    private function getNodeValue($node)
+    {
+        $value = 0;
+        if ($node['count'] == 0) {
+            return $this->sumMetadata($node);
+        }
+
+        if (is_array($node['metadata'])) {
+            foreach ($node['metadata'] as $meta) {
+                if (isset($node['children'][$meta - 1])) {
+                    $value += $this->getNodeValue($node['children'][$meta - 1]);
+                }
+            }
+        }
+
+        return $value;
     }
 
     private function takeNode($arr, $start)

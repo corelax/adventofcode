@@ -33,4 +33,14 @@ class Solver2018_08Test extends TestCase
             $solver->solvePart1('2 3 0 3 10 11 12 1 1 0 1 99 2 1 1 2')
         );
     }
+
+    public function testSolvePart2()
+    {
+        $solver = new Solver();
+
+        $this->assertEquals(
+            66,
+            $solver->solvePart2('2 3 0 3 10 11 12 1 1 0 1 99 2 1 1 2')
+        );
+    }
 }
