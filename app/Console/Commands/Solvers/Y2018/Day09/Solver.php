@@ -2,6 +2,20 @@
 
 namespace App\Console\Commands\Solvers\Y2018\Day09;
 
+class Node
+{
+    public $value;
+    public $next;
+    public $prev;
+
+    public function __construct($value)
+    {
+        $this->value = $value;
+        $this->next = null;
+        $this->prev = null;
+    }
+}
+
 class Solver
 {
     public function solvePart1(string $input)
@@ -13,22 +27,27 @@ class Solver
 
     private function playGame($playersCount, $lastMarble)
     {
-        // echo "game start $playersCount, $lastMarble\n";
-        $circle = [0];
-        $current = 0;
+        // echo "$playersCount, $lastMarble\n";
+
+        // in this rule, root never change.
+        $root = new Node(0);
+        $root->next = $root;
+        $root->prev = $root;
+
+        $current = $root;
 
         $scoreBoard = array_fill(1, $playersCount, 0);
 
         $player = 1;
         $marble = 1;
 
-        $this->showCircle($circle, $current, '-');
+        $this->showCircle($root, $current);
 
         while ($marble <= $lastMarble) {
-            list($circle, $current, $score) = $this->putMarble($circle, $current, $marble);
-            $this->showCircle($circle, $current, $player);
-
+            list($current, $score) = $this->processMarble($current, $marble);
             $scoreBoard[$player] += $score;
+
+            $this->showCircle($root, $current);
 
             $marble++;
             $player = ($player % $playersCount) + 1;
@@ -41,59 +60,60 @@ class Solver
         return max($scoreBoard);
     }
 
-    private function putMarble($circle, $current, $marble)
+    private function showCircle($root, $current)
     {
-        $score = 0;
-        if ($marble % 23 == 0) {
-            // remove
-            $next = $this->getPos($circle, $current, -7);
-            $score = $marble + $circle[$next];
-            array_splice($circle, $next, 1);
-        } else {
-            $next = $this->getPos($circle, $current, 2);
-            array_splice($circle, $next, 0, $marble);
-        }
+        return; // do nothing
 
-        return [$circle, $next, $score];
-    }
-
-    private function showCircle($circle, $current, $player)
-    {
-        return; // nothing
-
-        echo "[$player]";
-        for ($i = 0; $i < count($circle); $i++) {
-            echo ' ';
-            if ($i == $current) {
-                echo "({$circle[$i]})";
+        $p = $root;
+        do {
+            if ($p == $current) {
+                echo '(' . $p->value . ')' . ' ';
             } else {
-                echo "{$circle[$i]}";
+                echo $p->value . ' ';
             }
-        }
+            $p = $p->next;
+        } while ($root != $p);
         echo PHP_EOL;
     }
 
-    private function getPos($circle, $current, $offset)
+    private function processMarble($current, $marble)
     {
-        if ($offset < 0) {
-            if ($current < -1 * $offset) {
-                $next = $current + $offset + count($circle);
-            } else {
-                $next = $current + $offset;
+        $score = 0;
+        if ($marble % 23 == 0) {
+            foreach (range(1, 7) as $i) {
+                $current = $current->prev;
             }
+            $score = $marble + $current->value;
+            $next = $this->remove($current);
         } else {
-            if (count($circle) == 1) {
-                $next = 1;
-            } else {
-                $next = $current + $offset;
-                if ($next == count($circle)) {
-                    // keep
-                } else {
-                    $next = $next % count($circle);
-                }
+            foreach (range(1, 2) as $i) {
+                $current = $current->next;
             }
+            $next = $this->insert($current, $marble);
         }
 
-        return $next;
+        return [$next, $score];
+    }
+
+    // returns new current
+    private function insert($node, $value)
+    {
+        $newNode = new Node($value);
+        $newNode->next = $node;
+        $newNode->prev = $node->prev;
+
+        $node->prev->next = $newNode;
+        $node->prev = $newNode;
+
+        return $newNode;
+    }
+
+    // returns new current
+    private function remove($node)
+    {
+        $node->prev->next = $node->next;
+        $node->next->prev = $node->prev;
+
+        return $node->next;
     }
 }
