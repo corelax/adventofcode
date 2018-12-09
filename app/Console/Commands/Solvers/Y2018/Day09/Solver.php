@@ -46,24 +46,11 @@ class Solver
         $score = 0;
         if ($marble % 23 == 0) {
             // remove
-            if ($current < 7) {
-                $next = $current - 7 + count($circle);
-            } else {
-                $next = $current - 7;
-            }
+            $next = $this->getPos($circle, $current, -7);
             $score = $marble + $circle[$next];
             array_splice($circle, $next, 1);
         } else {
-            if (count($circle) == 1) {
-                $next = 1;
-            } else {
-                $next = $current + 2;
-                if ($next == count($circle)) {
-                    // keep
-                } else {
-                    $next = $next % count($circle);
-                }
-            }
+            $next = $this->getPos($circle, $current, 2);
             array_splice($circle, $next, 0, $marble);
         }
 
@@ -84,5 +71,29 @@ class Solver
             }
         }
         echo PHP_EOL;
+    }
+
+    private function getPos($circle, $current, $offset)
+    {
+        if ($offset < 0) {
+            if ($current < -1 * $offset) {
+                $next = $current + $offset + count($circle);
+            } else {
+                $next = $current + $offset;
+            }
+        } else {
+            if (count($circle) == 1) {
+                $next = 1;
+            } else {
+                $next = $current + $offset;
+                if ($next == count($circle)) {
+                    // keep
+                } else {
+                    $next = $next % count($circle);
+                }
+            }
+        }
+
+        return $next;
     }
 }
