@@ -25,6 +25,15 @@ class Solver
         return $result;
     }
 
+    public function solvePart2(string $input)
+    {
+        // NOTE: you may also need to increase stacksize (like, ulimit -s)
+        ini_set('memory_limit', '1024M');
+        $a = explode(' ', $input);
+        $result = $this->playGame($a[0], $a[6] * 100);
+        return $result;
+    }
+
     private function playGame($playersCount, $lastMarble)
     {
         // echo "$playersCount, $lastMarble\n";
