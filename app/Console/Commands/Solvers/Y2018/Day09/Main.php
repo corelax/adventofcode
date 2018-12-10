@@ -6,6 +6,8 @@ use Illuminate\Console\Command;
 use Storage;
 use SplFileObject;
 
+use App\Console\Commands\Solvers\Y2018\Day09\SolverWithArray as Solver;
+
 class Main extends Command
 {
     /**
