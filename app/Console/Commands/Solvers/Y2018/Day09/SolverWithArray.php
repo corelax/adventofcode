@@ -18,17 +18,14 @@ class SolverWithArray
         return $result;
     }
 
-    const NEXT = 0;
-    const PREV = 1;
-
     private function playGame($playersCount, $lastMarble)
     {
-        ini_set('memory_limit', -1);
+        ini_set('memory_limit', '768M');
         // echo "$playersCount, $lastMarble\n";
-        $this->circle = array_fill(0, $lastMarble + 1, [-1, -1]);
+        $this->circle = array_fill(0, ($lastMarble + 1) * 2, -1);
 
-        $this->circle[0][self::NEXT] = 0;
-        $this->circle[0][self::PREV] = 0;
+        $this->circle[0] = 0;
+        $this->circle[1] = 0;
 
         $current = 0;
 
@@ -66,7 +63,7 @@ class SolverWithArray
             } else {
                 echo $p . ' ';
             }
-            $p = $this->circle[$p][self::NEXT];
+            $p = $this->circle[$p * 2];
         } while (0 != $p);
         echo PHP_EOL;
     }
@@ -76,13 +73,13 @@ class SolverWithArray
         $score = 0;
         if ($marble % 23 == 0) {
             foreach (range(1, 7) as $i) {
-                $current = $this->circle[$current][self::PREV];
+                $current = $this->circle[$current * 2 + 1];
             }
             $score = $marble + $current;
             $next = $this->remove($current);
         } else {
             foreach (range(1, 2) as $i) {
-                $current = $this->circle[$current][self::NEXT];
+                $current = $this->circle[$current * 2];
             }
             $next = $this->insert($current, $marble);
         }
@@ -93,11 +90,11 @@ class SolverWithArray
     // returns new current
     private function insert($current, $value)
     {
-        $this->circle[$value][self::NEXT] = $current;
-        $this->circle[$value][self::PREV] = $this->circle[$current][self::PREV];
+        $this->circle[$value * 2] = $current;
+        $this->circle[$value * 2 + 1] = $this->circle[$current * 2 + 1];
 
-        $this->circle[$this->circle[$current][self::PREV]][self::NEXT] = $value;
-        $this->circle[$current][self::PREV] = $value;
+        $this->circle[($this->circle[$current * 2 + 1]) * 2] = $value;
+        $this->circle[$current * 2 + 1] = $value;
 
         return $value;
     }
@@ -105,9 +102,9 @@ class SolverWithArray
     // returns new current
     private function remove($current)
     {
-        $next = $this->circle[$current][self::NEXT];
-        $this->circle[$this->circle[$current][self::PREV]][self::NEXT] = $next;
-        $this->circle[$this->circle[$current][self::NEXT]][self::PREV] = $this->circle[$current][self::PREV];
+        $next = $this->circle[$current * 2];
+        $this->circle[($this->circle[$current * 2 + 1]) * 2]= $next;
+        $this->circle[($this->circle[$current * 2]) * 2 + 1]= $this->circle[$current * 2 + 1];
 
         return $next;
     }
