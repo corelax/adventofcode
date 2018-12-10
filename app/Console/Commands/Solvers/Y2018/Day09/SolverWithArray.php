@@ -18,6 +18,20 @@ class SolverWithArray
         return $result;
     }
 
+    // circle [
+    //     0    : marble0.next
+    //     1    : marble0.prev
+    //     2    : marble1.next
+    //     3    : marble1.prev
+    //     4    : marble2.next
+    //     ...
+    //     N*2  : marbleN.next
+    //     N*2+1: marbleN.next
+    // ]
+    // both next and prev has a marble value(not a index of circle)
+    // circle index can get with marble value ( *2 or *2+1 )
+    private $circle;
+
     private function playGame($playersCount, $lastMarble)
     {
         ini_set('memory_limit', '768M');
