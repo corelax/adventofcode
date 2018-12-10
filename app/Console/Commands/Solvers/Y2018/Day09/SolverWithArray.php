@@ -72,22 +72,20 @@ class SolverWithArray
 
             public function processMarble($marble)
             {
-                $current = $this->current;
                 $score = 0;
                 if ($marble % 23 == 0) {
                     foreach (range(1, 7) as $i) {
-                        $current = $this->circle[$current * 2 + 1];
+                        $this->current = $this->circle[$this->current * 2 + 1];
                     }
-                    $score = $marble + $current;
-                    $next = $this->remove($current);
+                    $score = $marble + $this->current;
+                    $this->remove();
                 } else {
                     foreach (range(1, 2) as $i) {
-                        $current = $this->circle[$current * 2];
+                        $this->current = $this->circle[$this->current * 2];
                     }
-                    $next = $this->insert($current, $marble);
+                    $this->insert($marble);
                 }
 
-                $this->current = $next;
                 return $score;
             }
 
@@ -107,26 +105,28 @@ class SolverWithArray
                 echo PHP_EOL;
             }
 
-            // returns new current
-            private function insert($current, $value)
+            // insert marble before current
+            private function insert($value)
             {
+                $current = $this->current;
                 $this->circle[$value * 2] = $current;
                 $this->circle[$value * 2 + 1] = $this->circle[$current * 2 + 1];
 
                 $this->circle[($this->circle[$current * 2 + 1]) * 2] = $value;
                 $this->circle[$current * 2 + 1] = $value;
 
-                return $value;
+                $this->current = $value;
             }
 
-            // returns new current
-            private function remove($current)
+            // remove current marble
+            private function remove()
             {
+                $current = $this->current;
                 $next = $this->circle[$current * 2];
                 $this->circle[($this->circle[$current * 2 + 1]) * 2]= $next;
                 $this->circle[($this->circle[$current * 2]) * 2 + 1]= $this->circle[$current * 2 + 1];
 
-                return $next;
+                $this->current = $next;
             }
         };
     }
