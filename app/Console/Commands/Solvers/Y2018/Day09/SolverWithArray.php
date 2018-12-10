@@ -74,15 +74,11 @@ class SolverWithArray
             {
                 $score = 0;
                 if ($marble % 23 == 0) {
-                    foreach (range(1, 7) as $i) {
-                        $this->current = $this->circle[$this->current * 2 + 1];
-                    }
+                    $this->moveCurrent(-7);
                     $score = $marble + $this->current;
                     $this->remove();
                 } else {
-                    foreach (range(1, 2) as $i) {
-                        $this->current = $this->circle[$this->current * 2];
-                    }
+                    $this->moveCurrent(2);
                     $this->insert($marble);
                 }
 
@@ -127,6 +123,33 @@ class SolverWithArray
                 $this->circle[($this->circle[$current * 2]) * 2 + 1]= $this->circle[$current * 2 + 1];
 
                 $this->current = $next;
+            }
+
+            private function moveCurrent($step)
+            {
+                if ($step == 0) {
+                    return;
+                }
+
+                if ($step > 0) {
+                    $this->moveCurrentNext(-$step);
+                } else {
+                    $this->moveCurrentPrev(-$step);
+                }
+            }
+
+            private function moveCurrentNext($step)
+            {
+                foreach (range(1, 2) as $i) {
+                    $this->current = $this->circle[$this->current * 2];
+                }
+            }
+
+            private function moveCurrentPrev($step)
+            {
+                foreach (range(1, $step) as $i) {
+                    $this->current = $this->circle[$this->current * 2 + 1];
+                }
             }
         };
     }
