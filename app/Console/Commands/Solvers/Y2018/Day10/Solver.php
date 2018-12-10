@@ -11,30 +11,22 @@ class Solver
         $timeElapsed = $this->calcTimeElapsed($infos);
         $this->timeElapsed = $timeElapsed;
 
-        $map = [];
-        $minX = $minY = PHP_INT_MAX;
-        $maxX = $maxY = 0;
         foreach ($infos as $info) {
-            $x = $info[0] + $info[2] * $timeElapsed;
-            $y = $info[1] + $info[3] * $timeElapsed;
-            $minX = min([$x, $minX]);
-            $minY = min([$y, $minY]);
-            $maxX = max([$x, $maxX]);
-            $maxY = max([$y, $maxY]);
+            $xList[] = $x = $info[0] + $info[2] * $timeElapsed;
+            $yList[] = $y = $info[1] + $info[3] * $timeElapsed;
             $map["$x,$y"] = true;
         }
 
-        $result = [];
-        foreach (range($minY, $maxY) as $y) {
+        foreach (range(min($yList), max($yList)) as $y) {
             $line = [];
-            foreach (range($minX, $maxX) as $x) {
+            foreach (range(min($xList), max($xList)) as $x) {
                 if (isset($map["$x,$y"])) {
                     $line[] = "#";
                 } else {
                     $line[] = ".";
                 }
             }
-            $result[$y - $minY] = implode('', $line);
+            $result[$y - min($yList)] = implode('', $line);
         }
 
         return $result;
@@ -65,12 +57,10 @@ class Solver
 
     private function calcTimeElapsed($infos)
     {
-        $ylist_vero = [];
         foreach ($infos as $info) {
             $ylist_vero[$info[3]][] = $info[1];
         }
 
-        $heights = [];
         foreach ($ylist_vero as $v => $ylist) {
             // actual height is max - min + 1. but it doesn't matter here.
             $heights[$v] = max($ylist) - min($ylist);
@@ -87,7 +77,7 @@ class Solver
 
         // if vList are 1, 2
         // min($ylist[1]) + 1 * $n == min($ylist[2]) + 2 * $n;
-        //      t=0   t=1   t=2  
+        //      t=0   t=1   t=2
         // v: | 1 2 | 1 2 | 1 2 |
         //    +-----+-----+-----+
         //    |   # |     |     |
