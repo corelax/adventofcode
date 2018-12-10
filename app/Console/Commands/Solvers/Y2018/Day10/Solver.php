@@ -58,18 +58,18 @@ class Solver
     private function calcTimeElapsed($infos)
     {
         foreach ($infos as $info) {
-            $ylist_vero[$info[3]][] = $info[1];
+            $ylist_velo[$info[3]][] = $info[1];
         }
 
-        foreach ($ylist_vero as $v => $ylist) {
+        foreach ($ylist_velo as $v => $ylist) {
             // actual height is max - min + 1. but it doesn't matter here.
             $heights[$v] = max($ylist) - min($ylist);
         }
 
-        // verocities have max height
+        // velocities have max height
         $vList = array_keys($heights, max($heights));
 
-        // it needs at least two verocities for calc
+        // it needs at least two velocities for calc
         if (count($vList) < 2) {
             echo 'sorry' . PHP_EOL;
             exit(1);
@@ -89,7 +89,7 @@ class Solver
         //    |     |     | # # |
         //    |     |     |     |
 
-        $timeElapsed = (min($ylist_vero[$vList[0]]) - min($ylist_vero[$vList[1]])) / ($vList[1] - $vList[0]);
+        $timeElapsed = (min($ylist_velo[$vList[0]]) - min($ylist_velo[$vList[1]])) / ($vList[1] - $vList[0]);
 
         return $timeElapsed;
     }
