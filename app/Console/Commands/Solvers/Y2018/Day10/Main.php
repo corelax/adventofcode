@@ -49,5 +49,6 @@ class Main extends Command
         foreach ($solver->solvePart1($input) as $line) {
             echo $line . PHP_EOL;
         }
+        echo "part2 : " . $solver->solvePart2($input) . PHP_EOL;
     }
 }

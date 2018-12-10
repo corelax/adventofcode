@@ -24,7 +24,7 @@ class Solver2018_10Test extends TestCase
         return $method->invokeArgs($obj, $args);
     }
 
-    public function testSolvePart1()
+    public function testSolver()
     {
         $solver = new Solver();
 
