@@ -65,31 +65,41 @@ class Solver
 
     private function calcTimeElapsed($infos)
     {
-        $foundY = [];
         $ylist_vero = [];
         foreach ($infos as $info) {
             $ylist_vero[$info[3]][] = $info[1];
         }
-        // ksort($ylist_vero);
+
         $heights = [];
         foreach ($ylist_vero as $v => $ylist) {
+            // actual height is max - min + 1. but it doesn't matter here.
             $heights[$v] = max($ylist) - min($ylist);
         }
 
-        $foundY = array_keys($heights, max($heights));
+        // verocities have max height
+        $vList = array_keys($heights, max($heights));
 
-        if (count($foundY) < 2) {
+        // it needs at least two verocities for calc
+        if (count($vList) < 2) {
             echo 'sorry' . PHP_EOL;
             exit(1);
         }
 
-        // if foundY are 1, 2
-        // min($ylist[1]) + $n == min($ylist[2]) + 2 * $n;
-        $timeElapsed = (min($ylist_vero[$foundY[0]]) - min($ylist_vero[$foundY[1]])) / ($foundY[1] - $foundY[0]);
-        // ksort($ylist_vero);
-        // foreach ($ylist_vero as $v => $ylist) {
-        //     echo $v . ' ' . (min($ylist) + $v * $timeElapsed) . PHP_EOL;
-        // }
+        // if vList are 1, 2
+        // min($ylist[1]) + 1 * $n == min($ylist[2]) + 2 * $n;
+        //      t=0   t=1   t=2  
+        // v: | 1 2 | 1 2 | 1 2 |
+        //    +-----+-----+-----+
+        //    |   # |     |     |
+        //    |   # |     |     |
+        //    | # # |   # |     |
+        //    | #   | # # |     |
+        //    | #   | # # | # # |
+        //    |     | #   | # # |
+        //    |     |     | # # |
+        //    |     |     |     |
+
+        $timeElapsed = (min($ylist_vero[$vList[0]]) - min($ylist_vero[$vList[1]])) / ($vList[1] - $vList[0]);
 
         return $timeElapsed;
     }
