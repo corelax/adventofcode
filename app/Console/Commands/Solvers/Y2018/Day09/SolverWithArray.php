@@ -2,6 +2,8 @@
 
 namespace App\Console\Commands\Solvers\Y2018\Day09;
 
+use SplFixedArray;
+
 class SolverWithArray
 {
     public function solvePart1(string $input)
@@ -20,7 +22,7 @@ class SolverWithArray
 
     private function playGame($playersCount, $lastMarble)
     {
-        ini_set('memory_limit', '768M');
+        ini_set('memory_limit', '256M');
         $model = $this->initModel($lastMarble);
         $model->showCircle();
 
@@ -62,7 +64,8 @@ class SolverWithArray
 
             public function __construct(int $lastMarble)
             {
-                $this->circle = array_fill(0, ($lastMarble + 1) * 2, -1);
+                $this->circle = new SplFixedArray(($lastMarble + 1) * 2);
+                // $this->circle = array_fill(0, ($lastMarble + 1) * 2, -1);
 
                 $this->circle[0] = 0;
                 $this->circle[1] = 0;
