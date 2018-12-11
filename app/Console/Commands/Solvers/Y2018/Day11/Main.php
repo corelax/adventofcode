@@ -47,5 +47,8 @@ class Main extends Command
 
         list($pos, $peek) = $solver->solvePart1($input);
         echo "part1 : $pos ($peek)" . PHP_EOL;
+
+        list($ans, $peek) = $solver->solvePart2($input);
+        echo "part2 : $ans ($peek)" . PHP_EOL;
     }
 }

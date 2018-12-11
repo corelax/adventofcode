@@ -33,7 +33,7 @@ class Solver2018_11Test extends TestCase
         $this->assertEquals( 4, $this->invoke($solver, 'calcPowerLevel', [101, 153, 71]));
     }
 
-    public function testSolver()
+    public function testSolvePart1()
     {
         $solver = new Solver();
 
@@ -42,5 +42,16 @@ class Solver2018_11Test extends TestCase
 
         $this->assertEquals(["21,61", 30], 
             $solver->solvePart1("42"));
+    }
+
+    public function testSolvePart2()
+    {
+        $solver = new Solver();
+
+        $this->assertEquals(["90,269,16", 113], 
+            $solver->solvePart2("18"));
+
+        $this->assertEquals(["232,251,12", 119], 
+            $solver->solvePart2("42"));
     }
 }

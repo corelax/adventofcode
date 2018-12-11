@@ -20,6 +20,77 @@ class Solver
         return $this->findPeek($board, $width, $height, 3);
     }
 
+    public function solvePart2(string $input, int $boxSize = 300)
+    {
+        $serialNumber = intval($input);
+
+        $width = $boxSize;
+        $height = $boxSize;
+
+        $board = $this->buildBoard($width, $height, $serialNumber);
+
+        // $this->dumpBoard($board, $width);
+
+
+        // init with board. equal to size == 1
+        $mapTotal = SplFixedArray::fromArray($board->toArray());
+
+        $peekMax = PHP_INT_MIN;
+        $posAt = '';
+
+        echo max($mapTotal->toArray()) . "init\n";
+
+        for ($size = 2; $size < $width; $size++) {
+            // $mapTotal[$y * $width + $x] = $this->calcTotal($board, $width, $height, $x, $y, $size);
+
+            // grow map total
+            echo "$size やるよ\n";
+            foreach (range(0, $height - $size) as $y) {
+                foreach (range(0, $width - $size) as $x) {
+                    // echo "底辺やるよ ($x, $y)\n";
+                    // when size 0 to 1, mapTotal has (0, 0). add (1, 0), (1, 1), (0, 1) is growed value
+                    foreach (range($x, $x + $size - 1) as $additional) {
+                        $aX = $additional;
+                        $aY = $y + $size - 1;
+                        // echo "ii $aX, $aY\n" . PHP_EOL;
+                        $mapTotal[$y * $width + $x] += $board[$aY * $width + $aX];
+                        // echo "oo $aX, $aY\n" . PHP_EOL;
+                // $sum += $board[($y + $offsetY) * $width + ($x + $offsetX)];
+                    }
+                    // echo "右辺やるよ ($x, $y)\n";
+                    // avoid to add right bottom corner twice
+                    foreach (range($y, $y + $size - 2) as $additional) {
+                        $aX = $x + $size - 1;
+                        $aY = $additional;
+                        // echo "ii $aX, $aY\n" . PHP_EOL;
+                        $mapTotal[$y * $width + $x] += $board[$aY * $width + $aX];
+                        // echo "oo $aX, $aY\n" . PHP_EOL;
+                    }
+                    // parameter is 1 origin
+                    // $board[$y * $width + $x] = $this->calcPowerLevel($x + 1, $y + 1, $serial);
+                    if ($x == 89 && $y == 168) {
+                        echo "-> $size " . $mapTotal[$y * $width + $x] . PHP_EOL;
+                    }
+                }
+            }
+
+            $peek = max($mapTotal->toArray());
+            $peekMax = max($peekMax, $peek);
+
+            if ($peekMax == $peek) {
+                echo "max is changed to $peekMax at $size\n";
+                // I forget to get the pos where is the peek
+                $keys = array_keys($mapTotal->toArray(), $peek);
+                // 1 origin
+                $x = ($keys[0] % $width) + 1;
+                $y = intval($keys[0] / $width) + 1;
+                $posAt = "$x,$y,$size";
+            }
+        }
+
+        return [$posAt, $peekMax];
+    }
+
     /**
      * Find the fuel cell's rack ID, which is its X coordinate plus 10.
      * Begin with a power level of the rack ID times the Y coordinate.
