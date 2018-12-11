@@ -41,36 +41,33 @@ class Solver
         echo max($mapTotal->toArray()) . "init\n";
 
         for ($size = 2; $size < $width; $size++) {
-            // $mapTotal[$y * $width + $x] = $this->calcTotal($board, $width, $height, $x, $y, $size);
-
             // grow map total
-            echo "$size やるよ\n";
+            echo "grows to $size\n";
             foreach (range(0, $height - $size) as $y) {
                 foreach (range(0, $width - $size) as $x) {
-                    // echo "底辺やるよ ($x, $y)\n";
-                    // when size 0 to 1, mapTotal has (0, 0). add (1, 0), (1, 1), (0, 1) is growed value
-                    foreach (range($x, $x + $size - 1) as $additional) {
+                    // when size 0 to 1, mapTotal has (0, 0). add (1, 0), (0, 1), (1, 1) is growed value
+                    // right edge and bottom edge and the corner
+
+                    // echo "add right edge of ($x, $y)\n";
+                    foreach (range($x, $x + $size - 2) as $additional) {
                         $aX = $additional;
                         $aY = $y + $size - 1;
                         // echo "ii $aX, $aY\n" . PHP_EOL;
                         $mapTotal[$y * $width + $x] += $board[$aY * $width + $aX];
-                        // echo "oo $aX, $aY\n" . PHP_EOL;
-                // $sum += $board[($y + $offsetY) * $width + ($x + $offsetX)];
                     }
-                    // echo "右辺やるよ ($x, $y)\n";
+
+                    // echo "add right side edge of ($x, $y)\n";
                     // avoid to add right bottom corner twice
                     foreach (range($y, $y + $size - 2) as $additional) {
                         $aX = $x + $size - 1;
                         $aY = $additional;
                         // echo "ii $aX, $aY\n" . PHP_EOL;
                         $mapTotal[$y * $width + $x] += $board[$aY * $width + $aX];
-                        // echo "oo $aX, $aY\n" . PHP_EOL;
                     }
-                    // parameter is 1 origin
-                    // $board[$y * $width + $x] = $this->calcPowerLevel($x + 1, $y + 1, $serial);
-                    if ($x == 89 && $y == 168) {
-                        echo "-> $size " . $mapTotal[$y * $width + $x] . PHP_EOL;
-                    }
+
+                    $aX = $x + $size - 1;
+                    $aY = $y + $size - 1;
+                    $mapTotal[$y * $width + $x] += $board[$aY * $width + $aX];
                 }
             }
 
