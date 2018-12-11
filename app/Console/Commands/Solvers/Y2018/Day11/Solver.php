@@ -17,7 +17,7 @@ class Solver
 
         // $this->dumpBoard($board, $width);
 
-        return $this->findPeek($board, $width, $height);
+        return $this->findPeek($board, $width, $height, 3);
     }
 
     /**
@@ -70,22 +70,15 @@ class Solver
         }
     }
 
-    private function findPeek($board, $width, $height)
+    private function findPeek($board, $width, $height, $size)
     {
         $peek = PHP_INT_MIN;
         $pos = '';
         // x y are 0 origin
-        $area = [
-            [0, 0], [1, 0], [2, 0],
-            [0, 1], [1, 1], [2, 1],
-            [0, 2], [1, 2], [2, 2],
-            ];
-        foreach (range(0, $height - 1 - 2) as $y) {
-            foreach (range(0, $width - 1 - 2) as $x) {
-                $sum = 0;
-                foreach ($area as $offset) {
-                    $sum += $board[($y + $offset[1]) * $width + ($x + $offset[0])];
-                }
+        foreach (range(0, $height - $size) as $y) {
+            foreach (range(0, $width - $size) as $x) {
+                $sum = $this->calcTotal($board, $width, $height, $x, $y, $size);
+
                 $peek = max($peek, $sum);
 
                 if ($peek == $sum) {
@@ -95,5 +88,17 @@ class Solver
         }
 
         return [$pos, $peek];
+    }
+
+    private function calcTotal($board, $width, $height, $x, $y, $size)
+    {
+        $sum = 0;
+        foreach (range(0, $size - 1) as $offsetY) {
+            foreach (range(0, $size - 1) as $offsetX) {
+                $sum += $board[($y + $offsetY) * $width + ($x + $offsetX)];
+            }
+        }
+
+        return $sum;
     }
 }
