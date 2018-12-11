@@ -10,42 +10,38 @@ class Solver
     {
         $serialNumber = intval($input);
 
-        $width = 300;
-        $height = 300;
+        $gridSize = 300;
 
-        $board = $this->buildBoard($width, $height, $serialNumber);
+        $grid = $this->buildGrid($gridSize, $serialNumber);
 
-        // $this->dumpBoard($board, $width);
+        // $this->dumpGrid($grid, $gridSize);
 
-        return $this->findPeek($board, $width, $height, 3);
+        return $this->findPeek($grid, $gridSize, 3);
     }
 
-    public function solvePart2(string $input, int $boxSize = 300)
+    public function solvePart2(string $input, int $gridSize = 300)
     {
         $serialNumber = intval($input);
 
-        $width = $boxSize;
-        $height = $boxSize;
+        $grid = $this->buildGrid($gridSize, $serialNumber);
 
-        $board = $this->buildBoard($width, $height, $serialNumber);
-
-        // $this->dumpBoard($board, $width);
+        // $this->dumpGrid($grid, $gridSize);
 
 
-        // init with board. equal to size == 1
-        $mapTotal = SplFixedArray::fromArray($board->toArray());
+        // init with grid. equal to size == 1
+        $mapTotal = SplFixedArray::fromArray($grid->toArray());
 
         $peekMax = PHP_INT_MIN;
         $posAt = '';
 
         echo max($mapTotal->toArray()) . "init\n";
 
-        for ($size = 2; $size < $width; $size++) {
+        for ($size = 2; $size < $gridSize; $size++) {
             // grow map total
             echo "grows to $size\n";
-            foreach (range(0, $height - $size) as $y) {
-                foreach (range(0, $width - $size) as $x) {
-                    $idx = $y * $width + $x;
+            foreach (range(0, $gridSize - $size) as $y) {
+                foreach (range(0, $gridSize - $size) as $x) {
+                    $idx = $y * $gridSize + $x;
 
                     // when size 0 to 1, mapTotal has (0, 0). add (1, 0), (0, 1), (1, 1) is growed value
                     // right edge and bottom edge and the corner
@@ -55,7 +51,7 @@ class Solver
                         $aX = $additional;
                         $aY = $y + $size - 1;
                         // echo "ii $aX, $aY\n" . PHP_EOL;
-                        $mapTotal[$idx] += $board[$aY * $width + $aX];
+                        $mapTotal[$idx] += $grid[$aY * $gridSize + $aX];
                     }
 
                     // echo "add right side edge of ($x, $y)\n";
@@ -64,12 +60,12 @@ class Solver
                         $aX = $x + $size - 1;
                         $aY = $additional;
                         // echo "ii $aX, $aY\n" . PHP_EOL;
-                        $mapTotal[$idx] += $board[$aY * $width + $aX];
+                        $mapTotal[$idx] += $grid[$aY * $gridSize + $aX];
                     }
 
                     $aX = $x + $size - 1;
                     $aY = $y + $size - 1;
-                    $mapTotal[$idx] += $board[$aY * $width + $aX];
+                    $mapTotal[$idx] += $grid[$aY * $gridSize + $aX];
                 }
             }
 
@@ -81,8 +77,8 @@ class Solver
                 // I forget to get the pos where is the peek
                 $keys = array_keys($mapTotal->toArray(), $peek);
                 // 1 origin
-                $x = ($keys[0] % $width) + 1;
-                $y = intval($keys[0] / $width) + 1;
+                $x = ($keys[0] % $gridSize) + 1;
+                $y = intval($keys[0] / $gridSize) + 1;
                 $posAt = "$x,$y,$size";
             }
         }
@@ -110,44 +106,44 @@ class Solver
         return $level - 5;
     }
 
-    private function buildBoard($width, $height, $serial)
+    private function buildGrid($gridSize, $serial)
     {
-        $board = new SplFixedArray($width * $height);
+        $grid = new SplFixedArray($gridSize * $gridSize);
 
-        // board is 0 origin
-        foreach (range(0, $height - 1) as $y) {
-            foreach (range(0, $width - 1) as $x) {
+        // grid is 0 origin
+        foreach (range(0, $gridSize - 1) as $y) {
+            foreach (range(0, $gridSize - 1) as $x) {
                 // parameter is 1 origin
-                $board[$y * $width + $x] = $this->calcPowerLevel($x + 1, $y + 1, $serial);
+                $grid[$y * $gridSize + $x] = $this->calcPowerLevel($x + 1, $y + 1, $serial);
             }
         }
 
-        return $board;
+        return $grid;
     }
 
-    private function dumpBoard($board, $width)
+    private function dumpGrid($grid, $gridSize)
     {
-        $board->rewind();
+        $grid->rewind();
         $i = 0;
-        echo "dump board" . PHP_EOL;
-        while ($board->valid()) {
-            printf("%2d ", $board->current());
-            $board->next();
+        echo "dump grid" . PHP_EOL;
+        while ($grid->valid()) {
+            printf("%2d ", $grid->current());
+            $grid->next();
             $i++;
-            if ($i % $width == 0) {
+            if ($i % $gridSize == 0) {
                 echo PHP_EOL;
             }
         }
     }
 
-    private function findPeek($board, $width, $height, $size)
+    private function findPeek($grid, $gridSize, $size)
     {
         $peek = PHP_INT_MIN;
         $pos = '';
         // x y are 0 origin
-        foreach (range(0, $height - $size) as $y) {
-            foreach (range(0, $width - $size) as $x) {
-                $sum = $this->calcTotal($board, $width, $height, $x, $y, $size);
+        foreach (range(0, $gridSize - $size) as $y) {
+            foreach (range(0, $gridSize - $size) as $x) {
+                $sum = $this->calcTotal($grid, $gridSize, $x, $y, $size);
 
                 $peek = max($peek, $sum);
 
@@ -160,12 +156,12 @@ class Solver
         return [$pos, $peek];
     }
 
-    private function calcTotal($board, $width, $height, $x, $y, $size)
+    private function calcTotal($grid, $gridSize, $x, $y, $size)
     {
         $sum = 0;
         foreach (range(0, $size - 1) as $offsetY) {
             foreach (range(0, $size - 1) as $offsetX) {
-                $sum += $board[($y + $offsetY) * $width + ($x + $offsetX)];
+                $sum += $grid[($y + $offsetY) * $gridSize + ($x + $offsetX)];
             }
         }
 
