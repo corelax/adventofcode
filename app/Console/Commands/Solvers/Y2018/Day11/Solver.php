@@ -45,6 +45,8 @@ class Solver
             echo "grows to $size\n";
             foreach (range(0, $height - $size) as $y) {
                 foreach (range(0, $width - $size) as $x) {
+                    $idx = $y * $width + $x;
+
                     // when size 0 to 1, mapTotal has (0, 0). add (1, 0), (0, 1), (1, 1) is growed value
                     // right edge and bottom edge and the corner
 
@@ -53,7 +55,7 @@ class Solver
                         $aX = $additional;
                         $aY = $y + $size - 1;
                         // echo "ii $aX, $aY\n" . PHP_EOL;
-                        $mapTotal[$y * $width + $x] += $board[$aY * $width + $aX];
+                        $mapTotal[$idx] += $board[$aY * $width + $aX];
                     }
 
                     // echo "add right side edge of ($x, $y)\n";
@@ -62,12 +64,12 @@ class Solver
                         $aX = $x + $size - 1;
                         $aY = $additional;
                         // echo "ii $aX, $aY\n" . PHP_EOL;
-                        $mapTotal[$y * $width + $x] += $board[$aY * $width + $aX];
+                        $mapTotal[$idx] += $board[$aY * $width + $aX];
                     }
 
                     $aX = $x + $size - 1;
                     $aY = $y + $size - 1;
-                    $mapTotal[$y * $width + $x] += $board[$aY * $width + $aX];
+                    $mapTotal[$idx] += $board[$aY * $width + $aX];
                 }
             }
 
