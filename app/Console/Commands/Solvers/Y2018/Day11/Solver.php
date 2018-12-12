@@ -49,10 +49,12 @@ class Solver
                     // when size 0 to 1, mapTotal has (0, 0). add (1, 0), (0, 1), (1, 1) is growed value
                     // right edge and bottom edge and the corner
 
+                    $differ = 0;
                     // echo "add right edge of ($x, $y)\n";
                     foreach (range($x, $x + $size - 2) as $pos) {
                         // echo "ii $pos, $bottomOffset\n" . PHP_EOL;
-                        $mapTotal[$dY + $x] += $grid[$dBottom + $pos];
+                        $differ += $grid[$dBottom + $pos];
+                        // $mapTotal[$dY + $x] += $grid[$dBottom + $pos];
                     }
 
                     // echo "add right side edge of ($x, $y)\n";
@@ -60,11 +62,16 @@ class Solver
                     $aX = $x + $size - 1;
                     foreach (range($y, $y + $size - 2) as $pos) {
                         // echo "ii $rightOffset, $pos\n" . PHP_EOL;
-                        $mapTotal[$dY + $x] += $grid[$pos * $gridSize + $rightOffset];
+                        $differ += $grid[$pos * $gridSize + $rightOffset];
+                        // $mapTotal[$dY + $x] += $grid[$pos * $gridSize + $rightOffset];
                     }
 
                     // echo "ii $rightOffset, $bottomOffset\n" . PHP_EOL;
-                    $mapTotal[$dY + $x] += $grid[$dBottom + $rightOffset];
+                    $differ += $grid[$dBottom + $rightOffset];
+
+
+                    // apply the differ to map
+                    $mapTotal[$dY + $x] += $differ;
 
                     if ($mapTotal[$dY + $x] > $peekMax) {
                         $peekMax = $mapTotal[$dY + $x];
