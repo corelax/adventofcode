@@ -71,12 +71,25 @@ class Solver
                     $rightOffset = $x + $size - 1;
 
                     // apply grow differs to map
+                    //
+                    // . : the square before grow cells
+                    // V : new X cols (is in subSumV. already calcurated.
+                    // H : new H cols (is in subSumH. already calcurated.
+                    // C : corner
+                    // 
+                    //   ...V
+                    //   ...V
+                    //   ...V
+                    //   HHHC
                     $mapTotal[$dY + $x] += 0
-                        // add new X cols subSum
+                        // add new X cols sum
+                        // it saved at top-right coord of subSumV
                         + $subSumV[$dY + $rightOffset]
-                        // add new Y rows subSum
+                        // add new Y rows sum
+                        // it saved at bottom-left coord of subSumH
                         + $subSumH[$bottomOffset + $x]
-                        // finally, add the corner
+                        // finally, add the corner.
+                        // of course it is bottom-right
                         + $grid[$bottomOffset + $rightOffset];
 
                     if ($mapTotal[$dY + $x] > $peekMax) {
