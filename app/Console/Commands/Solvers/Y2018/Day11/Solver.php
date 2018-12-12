@@ -65,20 +65,15 @@ class Solver
 
                     // echo "ii $rightOffset, $bottomOffset\n" . PHP_EOL;
                     $mapTotal[$dY + $x] += $grid[$dBottom + $rightOffset];
+
+                    if ($mapTotal[$dY + $x] > $peekMax) {
+                        $peekMax = $mapTotal[$dY + $x];
+
+                        // 1 origin
+                        $posAt = ($x + 1) . "," . ($y + 1) . "," . $size;
+                        echo "max is changed to $peekMax at $size\n";
+                    }
                 }
-            }
-
-            $peek = max($mapTotal->toArray());
-            $peekMax = max($peekMax, $peek);
-
-            if ($peekMax == $peek) {
-                echo "max is changed to $peekMax at $size\n";
-                // I forget to get the pos where is the peek
-                $keys = array_keys($mapTotal->toArray(), $peek);
-                // 1 origin
-                $x = ($keys[0] % $gridSize) + 1;
-                $y = intval($keys[0] / $gridSize) + 1;
-                $posAt = "$x,$y,$size";
             }
         }
 
