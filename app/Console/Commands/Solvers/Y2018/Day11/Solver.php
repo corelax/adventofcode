@@ -31,47 +31,53 @@ class Solver
         // init with grid. equal to size == 1
         $mapTotal = $grid;
 
+        // subSum keeps a sum of specific direction.
+        // target of sum length equals to size
+        //   when size is 5
+        //      subSumH(0, 0) has sum of (0, 0) to (4, 0)
+        //      subSumV(0, 0) has sum of (0, 0) to (0, 4)
+        //    generally
+        //      subSumH(x, y) has sum of (x, y) to (x + size - 1, y)
+        $subSumH = $subSumV = array_fill(0, $gridSize * $gridSize, 0); // horizontal and vertical
+
+        // for result
         $peekMax = PHP_INT_MIN;
         $posAt = '';
 
-        echo max($mapTotal) . "init\n";
-
         for ($size = 2; $size < $gridSize; $size++) {
-            // grow map total
             echo "grows to $size\n";
+
+            // grow subSum(length = $size - 1) to avoid the corner adding twice
+            $dY = 0;
             foreach (range(0, $gridSize - $size) as $y) {
-                $dY = $y * $gridSize;
-                $bottomOffset = $y + $size - 1;
-                $dBottom = $bottomOffset * $gridSize;
+                $bottomOffset = ($y + $size - 1) * $gridSize;
                 foreach (range(0, $gridSize - $size) as $x) {
                     $rightOffset = $x + $size - 1;
 
-                    // when size 0 to 1, mapTotal has (0, 0). add (1, 0), (0, 1), (1, 1) is growed value
-                    // right edge and bottom edge and the corner
+                    // keep remind one size small
+                    // Y - 1
+                    $subSumV[$dY + $x] += $grid[$bottomOffset - $gridSize + $x];
+                    // X - 1
+                    $subSumH[$dY + $x] += $grid[$dY + $rightOffset - 1];
+                }
+                $dY += $gridSize;
+            }
 
-                    $differ = 0;
-                    // echo "add right edge of ($x, $y)\n";
-                    foreach (range($x, $x + $size - 2) as $pos) {
-                        // echo "ii $pos, $bottomOffset\n" . PHP_EOL;
-                        $differ += $grid[$dBottom + $pos];
-                        // $mapTotal[$dY + $x] += $grid[$dBottom + $pos];
-                    }
+            // grow map total
+            $dY = 0;
+            foreach (range(0, $gridSize - $size) as $y) {
+                $bottomOffset = ($y + $size - 1) * $gridSize;
+                foreach (range(0, $gridSize - $size) as $x) {
+                    $rightOffset = $x + $size - 1;
 
-                    // echo "add right side edge of ($x, $y)\n";
-                    // avoid to add right bottom corner twice
-                    $aX = $x + $size - 1;
-                    foreach (range($y, $y + $size - 2) as $pos) {
-                        // echo "ii $rightOffset, $pos\n" . PHP_EOL;
-                        $differ += $grid[$pos * $gridSize + $rightOffset];
-                        // $mapTotal[$dY + $x] += $grid[$pos * $gridSize + $rightOffset];
-                    }
-
-                    // echo "ii $rightOffset, $bottomOffset\n" . PHP_EOL;
-                    $differ += $grid[$dBottom + $rightOffset];
-
-
-                    // apply the differ to map
-                    $mapTotal[$dY + $x] += $differ;
+                    // apply grow differs to map
+                    $mapTotal[$dY + $x] += 0
+                        // add new X cols subSum
+                        + $subSumV[$dY + $rightOffset]
+                        // add new Y rows subSum
+                        + $subSumH[$bottomOffset + $x]
+                        // finally, add the corner
+                        + $grid[$bottomOffset + $rightOffset];
 
                     if ($mapTotal[$dY + $x] > $peekMax) {
                         $peekMax = $mapTotal[$dY + $x];
@@ -81,6 +87,7 @@ class Solver
                         echo "max is changed to $peekMax at $size\n";
                     }
                 }
+                $dY += $gridSize;
             }
         }
 
