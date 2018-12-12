@@ -29,12 +29,12 @@ class Solver
 
 
         // init with grid. equal to size == 1
-        $mapTotal = SplFixedArray::fromArray($grid->toArray());
+        $mapTotal = $grid;
 
         $peekMax = PHP_INT_MIN;
         $posAt = '';
 
-        echo max($mapTotal->toArray()) . "init\n";
+        echo max($mapTotal) . "init\n";
 
         for ($size = 2; $size < $gridSize; $size++) {
             // grow map total
@@ -102,7 +102,7 @@ class Solver
 
     private function buildGrid($gridSize, $serial)
     {
-        $grid = new SplFixedArray($gridSize * $gridSize);
+        $grid = array_fill(0, $gridSize * $gridSize, 0);
 
         // grid is 0 origin
         foreach (range(0, $gridSize - 1) as $y) {
@@ -118,14 +118,9 @@ class Solver
 
     private function dumpGrid($grid, $gridSize)
     {
-        $grid->rewind();
-        $i = 0;
-        echo "dump grid" . PHP_EOL;
-        while ($grid->valid()) {
-            printf("%2d ", $grid->current());
-            $grid->next();
-            $i++;
-            if ($i % $gridSize == 0) {
+        for ($i = 0; $i < $gridSize * $gridSize; $i++) {
+            printf("%2d ", $grid[$i]);
+            if (($i + 1) % $gridSize == 0) {
                 echo PHP_EOL;
             }
         }
