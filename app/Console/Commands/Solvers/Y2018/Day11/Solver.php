@@ -40,32 +40,31 @@ class Solver
             // grow map total
             echo "grows to $size\n";
             foreach (range(0, $gridSize - $size) as $y) {
+                $dY = $y * $gridSize;
+                $bottomOffset = $y + $size - 1;
+                $dBottom = $bottomOffset * $gridSize;
                 foreach (range(0, $gridSize - $size) as $x) {
-                    $idx = $y * $gridSize + $x;
+                    $rightOffset = $x + $size - 1;
 
                     // when size 0 to 1, mapTotal has (0, 0). add (1, 0), (0, 1), (1, 1) is growed value
                     // right edge and bottom edge and the corner
 
                     // echo "add right edge of ($x, $y)\n";
-                    foreach (range($x, $x + $size - 2) as $additional) {
-                        $aX = $additional;
-                        $aY = $y + $size - 1;
-                        // echo "ii $aX, $aY\n" . PHP_EOL;
-                        $mapTotal[$idx] += $grid[$aY * $gridSize + $aX];
+                    foreach (range($x, $x + $size - 2) as $pos) {
+                        // echo "ii $pos, $bottomOffset\n" . PHP_EOL;
+                        $mapTotal[$dY + $x] += $grid[$dBottom + $pos];
                     }
 
                     // echo "add right side edge of ($x, $y)\n";
                     // avoid to add right bottom corner twice
-                    foreach (range($y, $y + $size - 2) as $additional) {
-                        $aX = $x + $size - 1;
-                        $aY = $additional;
-                        // echo "ii $aX, $aY\n" . PHP_EOL;
-                        $mapTotal[$idx] += $grid[$aY * $gridSize + $aX];
+                    $aX = $x + $size - 1;
+                    foreach (range($y, $y + $size - 2) as $pos) {
+                        // echo "ii $rightOffset, $pos\n" . PHP_EOL;
+                        $mapTotal[$dY + $x] += $grid[$pos * $gridSize + $rightOffset];
                     }
 
-                    $aX = $x + $size - 1;
-                    $aY = $y + $size - 1;
-                    $mapTotal[$idx] += $grid[$aY * $gridSize + $aX];
+                    // echo "ii $rightOffset, $bottomOffset\n" . PHP_EOL;
+                    $mapTotal[$dY + $x] += $grid[$dBottom + $rightOffset];
                 }
             }
 
@@ -112,9 +111,10 @@ class Solver
 
         // grid is 0 origin
         foreach (range(0, $gridSize - 1) as $y) {
+            $dY = $y * $gridSize;
             foreach (range(0, $gridSize - 1) as $x) {
                 // parameter is 1 origin
-                $grid[$y * $gridSize + $x] = $this->calcPowerLevel($x + 1, $y + 1, $serial);
+                $grid[$dY + $x] = $this->calcPowerLevel($x + 1, $y + 1, $serial);
             }
         }
 
@@ -160,8 +160,9 @@ class Solver
     {
         $sum = 0;
         foreach (range(0, $size - 1) as $offsetY) {
+            $dY = ($y + $offsetY) * $gridSize;
             foreach (range(0, $size - 1) as $offsetX) {
-                $sum += $grid[($y + $offsetY) * $gridSize + ($x + $offsetX)];
+                $sum += $grid[$dY + ($x + $offsetX)];
             }
         }
 
