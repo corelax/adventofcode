@@ -16,7 +16,7 @@ class Solver
 
         // $this->dumpGrid($sumGrid, $gridSize);
 
-        return $this->findPeek($sumGrid, $gridSize, 3);
+        return $this->findPeak($sumGrid, $gridSize, 3);
     }
 
     public function solvePart2(string $input, int $gridSize = 300)
@@ -28,21 +28,21 @@ class Solver
         // $this->dumpGrid($sumGrid, $gridSize);
 
         // for result
-        $peekMax = PHP_INT_MIN;
+        $peakMax = PHP_INT_MIN;
         $posAt = '';
 
         for ($size = 1; $size <= $gridSize; $size++) {
             echo "grows to $size\n";
 
-            list($pos, $peek) = $this->findPeek($sumGrid, $gridSize, $size);
-            if ($peek > $peekMax) {
-                $peekMax = $peek;
+            list($pos, $peak) = $this->findPeak($sumGrid, $gridSize, $size);
+            if ($peak > $peakMax) {
+                $peakMax = $peak;
                 $posAt = $pos . "," . $size;
-                echo "max is changed to $peekMax at $size\n";
+                echo "max is changed to $peakMax at $size\n";
             }
         }
 
-        return [$posAt, $peekMax];
+        return [$posAt, $peakMax];
     }
 
     /**
@@ -103,9 +103,9 @@ class Solver
         }
     }
 
-    private function findPeek($sumGrid, $gridSize, $size)
+    private function findPeak($sumGrid, $gridSize, $size)
     {
-        $peek = PHP_INT_MIN;
+        $peak = PHP_INT_MIN;
         $pos = '';
         // x y are 0 origin
         $topY = 0;
@@ -114,9 +114,9 @@ class Solver
             foreach (range(0, $gridSize - $size) as $x) {
                 $sum = $this->calcTotal($sumGrid, $gridSize, $x, $topY, $x + $size - 1, $bottomY);
 
-                $peek = max($peek, $sum);
+                $peak = max($peak, $sum);
 
-                if ($peek == $sum) {
+                if ($peak == $sum) {
                     $pos = ($x + 1) . ',' . ($y + 1);
                 }
             }
@@ -124,7 +124,7 @@ class Solver
             $bottomY += $gridSize;
         }
 
-        return [$pos, $peek];
+        return [$pos, $peak];
     }
 
     private function calcTotal($sumGrid, $gridSize, $x, $topY, $rightX, $bottomY)
