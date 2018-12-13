@@ -10,7 +10,7 @@ class Solver
     {
         $serialNumber = intval($input);
 
-        $gridSize = 300;
+        $gridSize = 300 + 1;
 
         $sumGrid = $this->buildGrid($gridSize, $serialNumber);
 
@@ -19,7 +19,7 @@ class Solver
         return $this->findPeak($sumGrid, $gridSize, 3);
     }
 
-    public function solvePart2(string $input, int $gridSize = 300)
+    public function solvePart2(string $input, int $gridSize = 300 + 1)
     {
         $serialNumber = intval($input);
 
@@ -31,7 +31,7 @@ class Solver
         $peakMax = PHP_INT_MIN;
         $posAt = '';
 
-        for ($size = 1; $size <= $gridSize; $size++) {
+        for ($size = 1; $size <= $gridSize - 1; $size++) {
             echo "grows to $size\n";
 
             list($pos, $peak) = $this->findPeak($sumGrid, $gridSize, $size);
@@ -69,22 +69,16 @@ class Solver
     {
         $sumGrid = array_fill(0, $gridSize * $gridSize, 0);
 
-        // grid is 0 origin
-        foreach (range(0, $gridSize - 1) as $y) {
+        // all (0, y) and (x, 0) are buffer for simplify
+        foreach (range(1, $gridSize - 1) as $y) {
             $dY = $y * $gridSize;
-            foreach (range(0, $gridSize - 1) as $x) {
+            foreach (range(1, $gridSize - 1) as $x) {
                 $idx = $dY + $x;
-                // parameter is 1 origin
-                $sum = $this->calcPowerLevel($x + 1, $y + 1, $serial);
-                if ($x !== 0) {
-                    $sum += $sumGrid[$idx - 1];
-                }
-                if ($y !== 0) {
-                    $sum += $sumGrid[$idx - $gridSize];
-                }
-                if ($x !== 0 && $y !== 0) {
-                    $sum -= $sumGrid[$idx - $gridSize - 1];
-                }
+                $sum =
+                    $this->calcPowerLevel($x, $y, $serial)
+                    + $sumGrid[$idx - 1]
+                    + $sumGrid[$idx - $gridSize]
+                    - $sumGrid[$idx - $gridSize - 1];
 
                 $sumGrid[$idx] = $sum;
             }
@@ -107,17 +101,17 @@ class Solver
     {
         $peak = PHP_INT_MIN;
         $pos = '';
-        // x y are 0 origin
-        $topY = 0;
-        $bottomY = ($size - 1) * $gridSize;
-        foreach (range(0, $gridSize - $size) as $y) {
-            foreach (range(0, $gridSize - $size) as $x) {
-                $sum = $this->calcTotal($sumGrid, $gridSize, $x, $topY, $x + $size - 1, $bottomY);
+        // x y are 1 origin
+        $topY = $gridSize;
+        $bottomY = $size * $gridSize;
+        foreach (range(1, $gridSize - $size) as $y) {
+            foreach (range(1, $gridSize - $size) as $x) {
+                $sum = calcTotal($sumGrid, $gridSize, $x, $topY, $x + $size - 1, $bottomY);
 
                 $peak = max($peak, $sum);
 
                 if ($peak == $sum) {
-                    $pos = ($x + 1) . ',' . ($y + 1);
+                    $pos = "$x,$y";
                 }
             }
             $topY += $gridSize;
@@ -132,17 +126,11 @@ class Solver
         // total of (x1, y1) to (x2, y2) is
         // sumGrid's
         //    (x2, y2) - (x2, y1 - 1) - (x1 - 1, y2) + (x1 - 1, y1 - 1)
-        $sum = $sumGrid[$bottomY + $rightX];
-
-        if ($topY != 0) {
-            $sum -= $sumGrid[$topY + $rightX - $gridSize];
-        }
-        if ($x != 0) {
-            $sum -= $sumGrid[$bottomY + $x - 1];
-        }
-        if ($topY != 0 && $x != 0) {
-            $sum += $sumGrid[$topY + $x - $gridSize - 1];
-        }
+        $sum = 
+            $sumGrid[$bottomY + $rightX]
+            - $sumGrid[$topY + $rightX - $gridSize]
+            - $sumGrid[$bottomY + $x - 1]
+            + $sumGrid[$topY + $x - $gridSize - 1];
 
         return $sum;
     }
