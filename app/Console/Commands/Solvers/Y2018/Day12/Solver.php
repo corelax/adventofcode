@@ -12,9 +12,14 @@ class Solver
 
         // print_r($patterns);
 
+        return $this->solveMain($state, $patterns, 20);
+    }
+
+    private function solveMain($state, $patterns, $generation)
+    {
         $leftValue = 0;
-        foreach (range(1, 20) as $generation) {
-            list($state, $leftValue) = $this->getNextGeneration($state, $patterns, $leftValue, $generation);
+        foreach (range(1, $generation) as $g) {
+            list($state, $leftValue) = $this->getNextGeneration($state, $patterns, $leftValue, $g);
         }
 
         return $this->sumPlants($state, $leftValue);
