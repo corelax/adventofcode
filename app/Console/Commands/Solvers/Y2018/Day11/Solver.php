@@ -2,8 +2,6 @@
 
 namespace App\Console\Commands\Solvers\Y2018\Day11;
 
-use SplFixedArray;
-
 class Solver
 {
     public function solvePart1(string $input)
@@ -31,7 +29,7 @@ class Solver
         $peakMax = PHP_INT_MIN;
         $posAt = '';
 
-        for ($size = 1; $size <= $gridSize - 1; $size++) {
+        foreach (range(1, $gridSize - 1) as $size) {
             echo "grows to $size\n";
 
             list($pos, $peak) = $this->findPeak($sumGrid, $gridSize, $size);
@@ -67,21 +65,61 @@ class Solver
 
     private function buildGrid($gridSize, $serial)
     {
+        // sumGrid keeps sum of rect area (1, 1) to (x, y)
+        // can get sum of any rect area easily
+        //   Think of a square that top-left is (x, y) and size = 3
+        //     x0 = x - 1
+        //     y0 = y - 1
+        //     x1 = x + size - 1 (= x0 + size)
+        //     y1 = y + size - 1 (= y0 + size)
+        //
+        //       0      x0   x      x1
+        //     +---+---+---+---+---+---+  
+        //   0 |   |   |   |   |   |   |  
+        //     +---+---+---+---+---+---+  
+        //     |   |   |   |   |   |   |  
+        //     +---+---+---+---+---+---+  
+        //  y0 |   |   | A |   |   | C |  
+        //     +---+---+---+---+---+---+  
+        //  y  |   |   |   |   |   |   |  
+        //     +---+---+---+---+---+---+  
+        //     |   |   |   |   |   |   |  
+        //     +---+---+---+---+---+---+  
+        //  y1 |   |   | B |   |   | D |  
+        //     +---+---+---+---+---+---+  
+        // 
+        //  A = sum of rect area (0, 0) to (x0, y0)
+        //  B = sum of rect area (0, 0) to (x0, y1)
+        //  C = sum of rect area (0, 0) to (x1, y0)
+        //  D = sum of rect area (0, 0) to (x1, y1)
+        //  and the sum of rect area (x, y) to (x1, y1) is
+        //    D - C(includes A) - B(includes A) + A
+        // 
+        // Can use for any rect not only square.
         $sumGrid = array_fill(0, $gridSize * $gridSize, 0);
 
-        // all (0, y) and (x, 0) are buffer for simplify
-        foreach (range(1, $gridSize - 1) as $y) {
-            $dY = $y * $gridSize;
-            foreach (range(1, $gridSize - 1) as $x) {
-                $idx = $dY + $x;
-                $sum =
-                    $this->calcPowerLevel($x, $y, $serial)
-                    + $sumGrid[$idx - 1]
-                    + $sumGrid[$idx - $gridSize]
-                    - $sumGrid[$idx - $gridSize - 1];
+        $range = range(1, $gridSize - 1);
 
-                $sumGrid[$idx] = $sum;
+        // all (0, y) and (x, 0) are buffer for simplify
+        $y0 = 0;
+        $y1= $gridSize;
+        foreach ($range as $y) {
+            foreach ($range as $x) {
+                $x0 = $x - 1;
+                $x1 = $x;
+
+                // current cell + upper cell + left cell - upper-left cell
+                // 
+                // Process all cells from top-left to bottom-right, 
+                // the value of current cell equals to the sum of (1, 1) to current cell.
+                $sumGrid[$y1 + $x1] =
+                    $this->calcPowerLevel($x, $y, $serial)
+                    + $sumGrid[$y1 + $x0]
+                    + $sumGrid[$y0 + $x1]
+                    - $sumGrid[$y0 + $x0];
             }
+            $y0 = $y1;
+            $y1 += $gridSize;
         }
 
         return $sumGrid;
@@ -101,37 +139,32 @@ class Solver
     {
         $peak = PHP_INT_MIN;
         $pos = '';
+
+        $range = range(1, $gridSize - $size);
+
         // x y are 1 origin
-        $topY = $gridSize;
-        $bottomY = $size * $gridSize;
-        foreach (range(1, $gridSize - $size) as $y) {
-            foreach (range(1, $gridSize - $size) as $x) {
-                $sum = calcTotal($sumGrid, $gridSize, $x, $topY, $x + $size - 1, $bottomY);
+        $y0 = 0;                    // y of current box - 1
+        $y1 = $size * $gridSize;    // bottom y of current box
+        foreach ($range as $y) {
+            foreach ($range as $x) {
+                $x0 = $x - 1;       // x of current box - 1
+                $x1 = $x0 + $size;  // right x of current box
 
-                $peak = max($peak, $sum);
+                $sum = 
+                    $sumGrid[$y1 + $x1]
+                    - $sumGrid[$y0 + $x1]
+                    - $sumGrid[$y1 + $x0]
+                    + $sumGrid[$y0 + $x0];
 
-                if ($peak == $sum) {
+                if ($sum > $peak) {
+                    $peak = $sum;
                     $pos = "$x,$y";
                 }
             }
-            $topY += $gridSize;
-            $bottomY += $gridSize;
+            $y0 += $gridSize;
+            $y1 += $gridSize;
         }
 
         return [$pos, $peak];
-    }
-
-    private function calcTotal($sumGrid, $gridSize, $x, $topY, $rightX, $bottomY)
-    {
-        // total of (x1, y1) to (x2, y2) is
-        // sumGrid's
-        //    (x2, y2) - (x2, y1 - 1) - (x1 - 1, y2) + (x1 - 1, y1 - 1)
-        $sum = 
-            $sumGrid[$bottomY + $rightX]
-            - $sumGrid[$topY + $rightX - $gridSize]
-            - $sumGrid[$bottomY + $x - 1]
-            + $sumGrid[$topY + $x - $gridSize - 1];
-
-        return $sum;
     }
 }
