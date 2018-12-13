@@ -12,21 +12,19 @@ class Solver
 
         $gridSize = 300;
 
-        list($grid, $sumGrid) = $this->buildGrid($gridSize, $serialNumber);
+        $sumGrid = $this->buildGrid($gridSize, $serialNumber);
 
-        // $this->dumpGrid($grid, $gridSize);
         // $this->dumpGrid($sumGrid, $gridSize);
 
-        return $this->findPeek($grid, $sumGrid, $gridSize, 3);
+        return $this->findPeek($sumGrid, $gridSize, 3);
     }
 
     public function solvePart2(string $input, int $gridSize = 300)
     {
         $serialNumber = intval($input);
 
-        list ($grid, $sumGrid) = $this->buildGrid($gridSize, $serialNumber);
+        $sumGrid = $this->buildGrid($gridSize, $serialNumber);
 
-        // $this->dumpGrid($grid, $gridSize);
         // $this->dumpGrid($sumGrid, $gridSize);
 
         // for result
@@ -36,7 +34,7 @@ class Solver
         for ($size = 1; $size <= $gridSize; $size++) {
             echo "grows to $size\n";
 
-            list($pos, $peek) = $this->findPeek($grid, $sumGrid, $gridSize, $size);
+            list($pos, $peek) = $this->findPeek($sumGrid, $gridSize, $size);
             if ($peek > $peekMax) {
                 $peekMax = $peek;
                 $posAt = $pos . "," . $size;
@@ -69,7 +67,6 @@ class Solver
 
     private function buildGrid($gridSize, $serial)
     {
-        $grid = array_fill(0, $gridSize * $gridSize, 0);
         $sumGrid = array_fill(0, $gridSize * $gridSize, 0);
 
         // grid is 0 origin
@@ -78,9 +75,7 @@ class Solver
             foreach (range(0, $gridSize - 1) as $x) {
                 $idx = $dY + $x;
                 // parameter is 1 origin
-                $grid[$idx] = $this->calcPowerLevel($x + 1, $y + 1, $serial);
-
-                $sum = $grid[$idx];
+                $sum = $this->calcPowerLevel($x + 1, $y + 1, $serial);
                 if ($x !== 0) {
                     $sum += $sumGrid[$idx - 1];
                 }
@@ -95,7 +90,7 @@ class Solver
             }
         }
 
-        return [$grid, $sumGrid];
+        return $sumGrid;
     }
 
     private function dumpGrid($grid, $gridSize)
@@ -108,7 +103,7 @@ class Solver
         }
     }
 
-    private function findPeek($grid, $sumGrid, $gridSize, $size)
+    private function findPeek($sumGrid, $gridSize, $size)
     {
         $peek = PHP_INT_MIN;
         $pos = '';
