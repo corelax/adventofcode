@@ -29,80 +29,18 @@ class Solver
         // $this->dumpGrid($grid, $gridSize);
         // $this->dumpGrid($sumGrid, $gridSize);
 
-
-        // init with grid. equal to size == 1
-        $mapTotal = $grid;
-
-        // subSum keeps a sum of specific direction.
-        // target of sum length equals to size
-        //   when size is 5
-        //      subSumH(0, 0) has sum of (0, 0) to (4, 0)
-        //      subSumV(0, 0) has sum of (0, 0) to (0, 4)
-        //    generally
-        //      subSumH(x, y) has sum of (x, y) to (x + size - 1, y)
-        $subSumH = $subSumV = array_fill(0, $gridSize * $gridSize, 0); // horizontal and vertical
-
         // for result
         $peekMax = PHP_INT_MIN;
         $posAt = '';
 
-        for ($size = 2; $size < $gridSize; $size++) {
+        for ($size = 1; $size <= $gridSize; $size++) {
             echo "grows to $size\n";
 
-            // grow subSum(length = $size - 1) to avoid the corner adding twice
-            $dY = 0;
-            foreach (range(0, $gridSize - $size) as $y) {
-                $bottomOffset = ($y + $size - 1) * $gridSize;
-                foreach (range(0, $gridSize - $size) as $x) {
-                    $rightOffset = $x + $size - 1;
-
-                    // keep remind one size small
-                    // Y - 1
-                    $subSumV[$dY + $x] += $grid[$bottomOffset - $gridSize + $x];
-                    // X - 1
-                    $subSumH[$dY + $x] += $grid[$dY + $rightOffset - 1];
-                }
-                $dY += $gridSize;
-            }
-
-            // grow map total
-            $dY = 0;
-            foreach (range(0, $gridSize - $size) as $y) {
-                $bottomOffset = ($y + $size - 1) * $gridSize;
-                foreach (range(0, $gridSize - $size) as $x) {
-                    $rightOffset = $x + $size - 1;
-
-                    // apply grow differs to map
-                    //
-                    // . : the square before grow cells
-                    // V : new X cols (is in subSumV. already calcurated.
-                    // H : new H cols (is in subSumH. already calcurated.
-                    // C : corner
-                    // 
-                    //   ...V
-                    //   ...V
-                    //   ...V
-                    //   HHHC
-                    $mapTotal[$dY + $x] += 0
-                        // add new X cols sum
-                        // it saved at top-right coord of subSumV
-                        + $subSumV[$dY + $rightOffset]
-                        // add new Y rows sum
-                        // it saved at bottom-left coord of subSumH
-                        + $subSumH[$bottomOffset + $x]
-                        // finally, add the corner.
-                        // of course it is bottom-right
-                        + $grid[$bottomOffset + $rightOffset];
-
-                    if ($mapTotal[$dY + $x] > $peekMax) {
-                        $peekMax = $mapTotal[$dY + $x];
-
-                        // 1 origin
-                        $posAt = ($x + 1) . "," . ($y + 1) . "," . $size;
-                        echo "max is changed to $peekMax at $size\n";
-                    }
-                }
-                $dY += $gridSize;
+            list($pos, $peek) = $this->findPeek($grid, $sumGrid, $gridSize, $size);
+            if ($peek > $peekMax) {
+                $peekMax = $peek;
+                $posAt = $pos . "," . $size;
+                echo "max is changed to $peekMax at $size\n";
             }
         }
 
