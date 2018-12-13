@@ -15,14 +15,42 @@ class Solver
         return $this->solveMain($state, $patterns, 20);
     }
 
+    public function solvePart2(iterable $input)
+    {
+        list($state, $patterns) = $this->parseInput($input);
+
+        return $this->solveMain($state, $patterns, 50000000000);
+    }
+
     private function solveMain($state, $patterns, $generation)
     {
+        $known = [];
+
         $leftValue = 0;
-        foreach (range(1, $generation) as $g) {
+        for ($g = 1; $g <= $generation; $g++) {
             list($state, $leftValue) = $this->getNextGeneration($state, $patterns, $leftValue, $g);
+
+            $value = $this->sumPlants($state, $leftValue);
+            if (isset($known[$state])) {
+                // can be slide pattern or swing pattern.
+
+                // not implemented to detect swing pattern. 
+                // even not sure make swing pattern.
+
+                // echo "slide pattern found\n";
+                // echo "state      : $state knownvalue\n";
+                // echo "knownvalue : {$known[$state]}\n";
+                return ($generation - $g) * ($value - $known[$state]) + $this->sumPlants($state, $leftValue);
+            } else {
+                $known[$state] = $value;
+            }
+
+            if ($g == 500) {
+                return "Sorry. Can't solve this yet. It may continuous growing pattern.";
+            }
         }
 
-        return $this->sumPlants($state, $leftValue);
+        return $value;
     }
 
     private function getNextGeneration(string $state, array $patterns, $leftValue, $generation)
