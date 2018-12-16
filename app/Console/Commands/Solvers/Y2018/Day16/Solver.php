@@ -35,17 +35,12 @@ class Solver
             $parsed = array_unique($parsed, SORT_REGULAR);
 
             foreach ($parsed as $info) {
-                if (isset($opMap[$info['opcode']])) {
-                    continue;
-                }
-
                 if (count($info['possibleOps']) == 1) {
                     $opName = $info['possibleOps'][0];
+                    $opMap[$info['opcode']] = $opName;
                     break;
                 }
             }
-
-            $opMap[$info['opcode']] = $opName;
 
             $remain = false;
             foreach ($parsed as &$info) {
@@ -57,6 +52,7 @@ class Solver
             unset($info);
         } while ($remain);
 
+        // > The registers start with the value 0.
         $register = [0, 0, 0, 0];
         foreach ($program as $arr) {
             list($op, $a, $b, $c) = $arr;
