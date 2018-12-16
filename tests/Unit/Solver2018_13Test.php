@@ -24,20 +24,18 @@ class Solver2018_13Test extends TestCase
         return $method->invokeArgs($obj, $args);
     }
 
-    public function testPrivates()
-    {
-        $solver = new Solver();
-
-        $this->assertEquals(
-            325, 325
-        );
-    }
-
     public function testSolvePart1()
     {
         $solver = new Solver();
 
         $this->assertEquals("7,3", $solver->solvePart1($this->testData));
+    }
+
+    public function testSolvePart2()
+    {
+        $solver = new Solver();
+
+        $this->assertEquals("6,4", $solver->solvePart2($this->testData2));
     }
 
     // be careful. it contains backslashes
@@ -49,4 +47,14 @@ class Solver2018_13Test extends TestCase
             '\-+-/  \-+--/',
             '  \------/   ',
         ];
+
+    private $testData2 = [
+        '/>-<\\  ',
+        '|   |  ',
+        '| /<+-\\',
+        '| | | v',
+        '\\>+</ |',
+        '  |   ^',
+        '  \\<->/',
+    ];
 }

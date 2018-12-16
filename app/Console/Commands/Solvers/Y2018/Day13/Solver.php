@@ -11,11 +11,31 @@ class Solver
     {
         $circuit = self::createModel($input);
 
-        while (($ret = $circuit->isSafe()) === true) {
+        while (true) {
+            $carts = $circuit->getCrushedCarts();
+            if (count($carts) != 0) {
+                $cart = $carts[0];
+                return "{$cart['x']},{$cart['y']}";
+            }
+            $circuit->tick();
+        }
+    }
+
+    public function solvePart2(iterable $input)
+    {
+        $circuit = self::createModel($input);
+
+        while (true) {
+            $carts = $circuit->getCarts();
+            if (count($carts) == 1) {
+                foreach ($carts as $cart) {
+                    return "{$cart['x']},{$cart['y']}";
+                }
+            }
             $circuit->tick();
         }
 
-        return $ret;
+        return "{$lastCart['x']},{$lastCart['y']}";
     }
 
     private static function createModel(iterable $seed)
@@ -30,6 +50,7 @@ class Solver
 
             // $cart
             private $carts;
+            private $crushedCarts = [];
 
             private $handleStat = "<^>";
             private $velocities = [
@@ -80,13 +101,15 @@ class Solver
                             case 'v':
                             case '<':
                             case '>':
-                                $this->carts[] = [
+                                $cart  = [
                                     'x' => $x,
                                     'y' => $y,
                                     'direction' => $line[$x],
                                     'handle' => 0,  // left turn on the first intersection
                                                     // left straight right left straight...
+                                    'running' => true,
                                 ];
+                                $this->carts[$this->makeSortableCartKey($cart)] = $cart;
                                 // cart isn't on any corners by definition
                                 // > On your initial map, the track under each cart is 
                                 // > a straight path matching the direction the cart is facing.
@@ -96,25 +119,36 @@ class Solver
                 }
             }
 
-            public function isSafe()
+            public function getCarts()
             {
-                $m = [];
-                foreach ($this->carts as $cart) {
-                    $pos = "{$cart['x']},{$cart['y']}";
-                    if (isset($m[$pos])) {
-                        return $pos;
-                    }
-                    $m[$pos] = true;
-                }
-
-                return true;
+                return $this->carts;
             }
 
+            public function getCrushedCarts()
+            {
+                return $this->crushedCarts;
+            }
+
+            private $ticks = 0;
             public function tick()
             {
+                $this->ticks++;
+                ksort($this->carts);
                 // $this->printWithWait(0.2);
-                foreach ($this->carts as &$cart) {
+
+                // foreach ($carts as $key => $cart) and modify $carts[$key] doesn't work;
+                // use only keys for loop.
+                $keys = array_keys($this->carts);
+                foreach ($keys as $key) {
+                    $cart = $this->carts[$key];
                     // go forward and turn if there's a corner or intersection
+
+                    $checkFuture = $checkCurrent = false;
+                    if (in_array($cart['direction'], ['<', '^'])) {
+                        $checkFuture = true;
+                    } else {
+                        $checkCurrent = true;
+                    }
 
                     $cart['x'] += $this->velocities[$cart['direction']]['x'];
                     $cart['y'] += $this->velocities[$cart['direction']]['y'];
@@ -132,7 +166,40 @@ class Solver
                                 break;
                         }
                     }
+
+                    $newKey = $this->makeSortableCartKey($cart);
+                    if ($checkCurrent) {
+                        if (isset($this->carts[$newKey]) && $this->carts[$newKey]['running']) {
+                            // crush
+                            // echo "crush (current) $key -> $newKey\n";
+                            $cart['running'] = false;
+                            $this->carts[$newKey]['running'] = false;
+                            $this->carts[$key]['running'] = false;
+                            $this->crushedCarts[] = $cart;
+                        }
+                    }
+                    if ($checkFuture) {
+                        if (isset($newCarts[$newKey])) {
+                            // crushed
+                            // echo "crush (future)\n";
+                            $cart['running'] = false;
+                            $this->carts[$key]['running'] = false;
+                            $this->crushedCarts[] = $cart;
+                            $this->crushedCarts[] = $newCarts[$newKey];
+                            unset($newCarts[$newKey]);
+                        }
+                    }
+
+                    if ($cart['running']) {
+                        $newCarts[$this->makeSortableCartKey($cart)] = $cart;
+                    }
                 }
+                $this->carts = $newCarts;
+            }
+
+            private function makeSortableCartKey($cart)
+            {
+                return sprintf("%04d:%04d", $cart['y'], $cart['x']);
             }
 
             public function printWithWait($wait = 0)
@@ -140,7 +207,6 @@ class Solver
                 system('clear');
                 echo "print start" . PHP_EOL;
 
-                // $this->wholeSize = ['x' => 0, 'y' => 0];
                 $board = [];
                 for ($y = 0; $y < $this->wholeSize['y']; $y++) {
                     for ($x = 0; $x < $this->wholeSize['x']; $x++) {
@@ -153,7 +219,9 @@ class Solver
                 }
 
                 foreach ($this->carts as $cart) {
-                    $board[$cart['y']][$cart['x']] = $cart['direction'];
+                    if ($cart['running']) {
+                        $board[$cart['y']][$cart['x']] = $cart['direction'];
+                    }
                 }
 
                 for ($y = 0; $y < $this->wholeSize['y']; $y++) {
