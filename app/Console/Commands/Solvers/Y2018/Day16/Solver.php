@@ -23,13 +23,6 @@ class Solver
     {
         list($parsed, $program) = $this->parseInput($input);
 
-        $ret = 0;
-        foreach ($parsed as $info) {
-            if (count($info['possibleOps']) >= 3) {
-                $ret++;
-            }
-        }
-
         $opMap = [];
         do {
             $parsed = array_unique($parsed, SORT_REGULAR);
@@ -42,6 +35,7 @@ class Solver
                 }
             }
 
+            // remove detected opName from candidates
             $remain = false;
             foreach ($parsed as &$info) {
                 $info['possibleOps'] = array_values(array_diff($info['possibleOps'], [$opName]));
@@ -50,13 +44,14 @@ class Solver
                 }
             }
             unset($info);
+
         } while ($remain);
 
         // > The registers start with the value 0.
         $register = [0, 0, 0, 0];
         foreach ($program as $arr) {
             list($op, $a, $b, $c) = $arr;
-            $register = $this->{$opMap[$op]}($register, $a, $b, $c);
+            self::{$opMap[$op]}($register, $a, $b, $c);
         }
 
         return $register[0];
@@ -106,7 +101,10 @@ class Solver
     {
         $ret = [];
         foreach ($this->ops as $op) {
-            if (self::$op($registerBefore, $a, $b, $c) == $registerAfter) {
+            // copy because self::$op changes the first parameter by reference
+            $before = $registerBefore;
+            self::$op($before, $a, $b, $c);
+            if ($before == $registerAfter) {
                 $ret[] = $op;
             }
         }
@@ -127,99 +125,83 @@ class Solver
     
     // instruction set
 
-    private static function addr($register, $a, $b, $c)
+    private static function addr(&$register, $a, $b, $c)
     {
         $register[$c] = $register[$a] + $register[$b];
-        return $register;
     }
 
-    private static function addi($register, $a, $b, $c)
+    private static function addi(&$register, $a, $b, $c)
     {
         $register[$c] = $register[$a] + $b;
-        return $register;
     }
 
-    private static function mulr($register, $a, $b, $c)
+    private static function mulr(&$register, $a, $b, $c)
     {
         $register[$c] = $register[$a] * $register[$b];
-        return $register;
     }
 
-    private static function muli($register, $a, $b, $c)
+    private static function muli(&$register, $a, $b, $c)
     {
         $register[$c] = $register[$a] * $b;
-        return $register;
     }
 
-    private static function banr($register, $a, $b, $c)
+    private static function banr(&$register, $a, $b, $c)
     {
         $register[$c] = $register[$a] & $register[$b];
-        return $register;
     }
 
-    private static function bani($register, $a, $b, $c)
+    private static function bani(&$register, $a, $b, $c)
     {
         $register[$c] = $register[$a] & $b;
-        return $register;
     }
 
-    private static function borr($register, $a, $b, $c)
+    private static function borr(&$register, $a, $b, $c)
     {
         $register[$c] = $register[$a] | $register[$b];
-        return $register;
     }
 
-    private static function bori($register, $a, $b, $c)
+    private static function bori(&$register, $a, $b, $c)
     {
         $register[$c] = $register[$a] | $b;
-        return $register;
     }
 
-    private static function setr($register, $a, $b, $c)
+    private static function setr(&$register, $a, $b, $c)
     {
         $register[$c] = $register[$a];
-        return $register;
     }
 
-    private static function seti($register, $a, $b, $c)
+    private static function seti(&$register, $a, $b, $c)
     {
         $register[$c] = $a;
-        return $register;
     }
 
-    private static function gtir($register, $a, $b, $c)
+    private static function gtir(&$register, $a, $b, $c)
     {
         $register[$c] = ($a > $register[$b]) ? 1 : 0;
-        return $register;
     }
 
-    private static function gtri($register, $a, $b, $c)
+    private static function gtri(&$register, $a, $b, $c)
     {
         $register[$c] = ($register[$a] > $b) ? 1 : 0;
-        return $register;
     }
 
-    private static function gtrr($register, $a, $b, $c)
+    private static function gtrr(&$register, $a, $b, $c)
     {
         $register[$c] = ($register[$a] > $register[$b]) ? 1 : 0;
-        return $register;
     }
 
-    private static function eqir($register, $a, $b, $c)
+    private static function eqir(&$register, $a, $b, $c)
     {
         $register[$c] = ($a == $register[$b]) ? 1 : 0;
-        return $register;
     }
 
-    private static function eqri($register, $a, $b, $c)
+    private static function eqri(&$register, $a, $b, $c)
     {
         $register[$c] = ($register[$a] == $b) ? 1 : 0;
-        return $register;
     }
 
-    private static function eqrr($register, $a, $b, $c)
+    private static function eqrr(&$register, $a, $b, $c)
     {
         $register[$c] = ($register[$a] == $register[$b]) ? 1 : 0;
-        return $register;
     }
 }
