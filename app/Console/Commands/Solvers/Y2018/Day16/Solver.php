@@ -7,11 +7,73 @@ class Solver
 {
     public function solvePart1(iterable $input)
     {
+        list($parsed, $program) = $this->parseInput($input);
+
         $ret = 0;
+        foreach ($parsed as $info) {
+            if (count($info['possibleOps']) >= 3) {
+                $ret++;
+            }
+        }
+
+        return $ret;
+    }
+
+    public function solvePart2(iterable $input)
+    {
+        list($parsed, $program) = $this->parseInput($input);
+
+        $ret = 0;
+        foreach ($parsed as $info) {
+            if (count($info['possibleOps']) >= 3) {
+                $ret++;
+            }
+        }
+
+        $opMap = [];
+        do {
+            $parsed = array_unique($parsed, SORT_REGULAR);
+
+            foreach ($parsed as $info) {
+                if (isset($opMap[$info['opcode']])) {
+                    continue;
+                }
+
+                if (count($info['possibleOps']) == 1) {
+                    $opName = $info['possibleOps'][0];
+                    break;
+                }
+            }
+
+            $opMap[$info['opcode']] = $opName;
+
+            $remain = false;
+            foreach ($parsed as &$info) {
+                $info['possibleOps'] = array_values(array_diff($info['possibleOps'], [$opName]));
+                if (count($info['possibleOps']) != 0) {
+                    $remain = true;
+                }
+            }
+            unset($info);
+        } while ($remain);
+
+        $register = [0, 0, 0, 0];
+        foreach ($program as $arr) {
+            list($op, $a, $b, $c) = $arr;
+            $register = $this->{$opMap[$op]}($register, $a, $b, $c);
+        }
+
+        return $register[0];
+    }
+
+    private function parseInput(iterable $input)
+    {
+        $parsed = [];
+        $program = [];
 
         $skipCount = 0;
         for ($i = 0; $i < count($input); $i++) {
-            if ($skipCount == 3) {
+            if ($skipCount == 2) {
                 break;
             }
             if ($input[$i] == '') {
@@ -32,18 +94,16 @@ class Solver
 
                 $ops = $this->getPossibleOps($before, $after, $a, $b, $c);
 
-                if (count($ops) >= 3) {
-                    $ret++;
-                }
+                $parsed[] = ['opcode' => $opcode, 'possibleOps' => $ops];
             }
         }
 
-        return $ret;
-    }
+        for (; $i < count($input); $i++) {
+            preg_match_all('/\d+/', $input[$i], $matches);
+            $program[] = $matches[0];
+        }
 
-    public function solvePart2(iterable $input)
-    {
-        return '';
+        return [$parsed, $program];
     }
 
     private function getPossibleOps($registerBefore, $registerAfter, $a, $b, $c)
