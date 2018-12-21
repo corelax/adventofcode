@@ -20,6 +20,39 @@ class Solver
         return $register[0];
     }
 
+    public function solvePart2(iterable $input)
+    {
+        /*
+        list($posIp, $program) = $this->parseInput($input);
+
+        $register = [1, 0, 0, 0, 0, 0];
+
+        while ($register[$posIp] < count($program)) {
+            list($op, $a, $b, $c) = $program[$register[$posIp]];
+            self::$op($register, $a, $b, $c);
+            $register[$posIp]++;
+        }
+
+        return $register[0];
+        */
+
+        // convert input to code(and optimized a little)
+        // part1
+        $r4 = 4 * 19 * 11 + (6 * 22 + 21);
+
+        // part2
+        $r4 += (27 * 28 + 29) * 30 * 14 * 32;
+        $r0 = 0;
+
+        for ($r5 = 1; $r5 <= $r4; $r5++) {
+            if ($r4 % $r5 == 0) {
+                $r0 += $r5;
+            }
+        }
+
+        return $r0;
+    }
+
     private function parseInput(iterable $input)
     {
         $pc = 0;
