@@ -38,4 +38,20 @@ class Solver2018_23Test extends TestCase
                 'pos=<1,3,1>, r=1',
             ]));
     }
+
+    public function testSolvePart2()
+    {
+        $solver = new Solver();
+
+        $this->assertEquals(
+            36,
+            $solver->solvePart2([
+                'pos=<10,12,12>, r=2',
+                'pos=<12,14,12>, r=2',
+                'pos=<16,12,12>, r=4',
+                'pos=<14,14,14>, r=6',
+                'pos=<50,50,50>, r=200',
+                'pos=<10,10,10>, r=5',
+            ]));
+    }
 }
