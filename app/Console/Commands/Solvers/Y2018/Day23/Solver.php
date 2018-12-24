@@ -58,21 +58,35 @@ class Solver
                 }
             }
 
-            $candidates = $newCandidates;
+            // shrink candidates only nearest positions
+            list($distance, $candidates) = $this->getNearest($newCandidates);
             // print_r($cnt);
+            // print_r($distance);
             // print_r($candidates);
         }
 
-        $nearest = [PHP_INT_MAX, PHP_INT_MAX, PHP_INT_MAX];
+        list($distance, $posList) = $this->getNearest($candidates);
+
+        return $distance;
+    }
+
+    private function getNearest($posList)
+    {
+        $nearest = [];
         $min = PHP_INT_MAX;
-        foreach ($candidates as $pos) {
+        foreach ($posList as $pos) {
             $distance = $this->distance(0, 0, 0, $pos[0], $pos[1], $pos[2]);
             if ($min > $distance) {
+                $nearest = [];
                 $min = $distance;
+            }
+
+            if ($min >= $distance) {
+                $nearest[] = $pos;
             }
         }
 
-        return $distance;
+        return [$min, $nearest];
     }
 
     private function parseInput(iterable $input)
