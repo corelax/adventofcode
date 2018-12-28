@@ -33,8 +33,22 @@ class Solver
     {
         $this->parseInput($input);
 
+        $memo = [$this->land];
+
+        $skip = 0;
+        $loopStart = 0;
+        $loopEnd = 0;
+
         for ($i = 0; $i < 1000000000; $i++) {
             $this->tick();
+            $found = array_search($this->land, $memo);
+            if ($found !== false) {
+                $this->land = $memo[(1000000000 + 1) % ($i - $found + 1) + $found + 1];
+                break;
+            }
+            else {
+                $memo[] = $this->land;
+            }
         }
         $this->printLand();
 
