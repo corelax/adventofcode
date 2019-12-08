@@ -33,5 +33,8 @@ class Solver2019_01Test extends TestCase
 
     public function testSolvePart2()
     {
+        $this->assertEquals(    2, $this->solver->solvePart2([    14]));
+        $this->assertEquals(  966, $this->solver->solvePart2([  1969]));
+        $this->assertEquals(50346, $this->solver->solvePart2([100756]));
     }
 }

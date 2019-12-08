@@ -18,7 +18,11 @@ class Solver
 
     public function solvePart2(iterable $input): int
     {
-        return -1;
+        $this->parseInput($input);
+
+        return array_sum(array_map(
+                    fn($n) => self::calcRequiredFuelRecursive($n), $this->masslist)
+                );
     }
 
     private function parseInput(iterable $input): void
@@ -34,5 +38,18 @@ class Solver
     private static function calcRequiredFuel(int $mass): int
     {
         return intval($mass / 3) - 2;
+    }
+
+    private static function calcRequiredFuelRecursive(int $mass): int
+    {
+        $total = 0;
+
+        $fuel = self::calcRequiredFuel($mass);
+
+        if ($fuel <= 0) {
+            return 0;
+        }
+
+        return ($total + $fuel + self::calcRequiredFuelRecursive($fuel));
     }
 }
