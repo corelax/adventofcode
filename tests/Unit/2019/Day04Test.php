@@ -31,9 +31,12 @@ class Solver2019_04Test extends TestCase
         $this->assertFalse($this->invoke($this->solver, 'isValid', [123789]));
     }
 
-    // public function testSolvePart2()
-    // {
-    // }
+    public function testSolvePart2()
+    {
+        $this->assertTrue($this->invoke($this->solver, 'hasJustDouble', [112233]));
+        $this->assertFalse($this->invoke($this->solver, 'hasJustDouble', [123444]));
+        $this->assertTrue($this->invoke($this->solver, 'hasJustDouble', [111122]));
+    }
 
     /**
      * invoke method anyway.
