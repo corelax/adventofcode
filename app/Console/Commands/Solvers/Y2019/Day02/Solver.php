@@ -9,12 +9,14 @@ class Solver
 
     private $snapshot;
 
-    public function solvePart1(iterable $input): int
+    public function solvePart1(iterable $input, bool $dryrun): int
     {
         $this->parseInput($input);
 
-        $this->memory[1] = 12;
-        $this->memory[2] =  2;
+        if (! $dryrun) {
+            $this->memory[1] = 12;
+            $this->memory[2] =  2;
+        }
 
         $this->run();
 

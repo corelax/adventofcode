@@ -34,7 +34,7 @@ class Solver2019_02Test extends TestCase
 
     private function s1dump($input)
     {
-        $this->solver->solvePart1($input);
+        $this->solver->solvePart1($input, true);
         return $this->invoke($this->solver, 'dump', []);
     }
 
