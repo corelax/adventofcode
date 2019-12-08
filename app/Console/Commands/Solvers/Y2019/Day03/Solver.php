@@ -9,13 +9,16 @@ class Solver
     {
         $routes = $this->parseInput($input);
 
-        return $this->getMinDistance($routes);
+        return $this->getMinDistance($routes, 1);
     }
 
     public function solvePart2(iterable $input): int
     {
-        $this->parseInput($input);
-        return -1;
+        // NOTE: you may also need to increase stacksize (like, ulimit -s)
+        ini_set('memory_limit', '1024M');
+        $routes = $this->parseInput($input);
+
+        return $this->getMinDistance($routes, 2);
     }
 
     private function parseInput(iterable $input): array
@@ -33,7 +36,7 @@ class Solver
     }
 
     // only work with just 2 wires
-    private function getMinDistance(iterable $routes)
+    private function getMinDistance(iterable $routes, $type)
     {
         $map = [];
         $minDistance = PHP_INT_MAX;
@@ -48,6 +51,7 @@ class Solver
             $x = $s_x;
             $y = $s_y;
 
+            $step = 0;
             $routeIndex++;
             foreach ($route as $command) {
                 switch($command['d']) {
@@ -59,11 +63,26 @@ class Solver
                 for ($i = 0; $i < $command['l']; $i++) {
                     $x += $dx;
                     $y += $dy;
-                    if (isset($map[$x][$y]) && $map[$x][$y] != $routeIndex) {
-                        $distance = self::distance($s_x, $s_y, $x, $y);
-                        $minDistance = min($distance, $minDistance);
+                    $step++;
+                    if ($type == 1) {
+                        if (isset($map[$x][$y]) && $map[$x][$y] != $routeIndex) {
+                            $distance = self::distance($s_x, $s_y, $x, $y);
+                            $minDistance = min($distance, $minDistance);
+                        }
+                        $map[$x][$y] = $routeIndex;
+                    } else {
+                        // record min step to map
+                        if (!isset($map[$x][$y][$routeIndex])) {
+                            $map[$x][$y][$routeIndex] = $step;
+                        }
+                            
+                        // MEMO: 1 = first wire
+                        if (isset($map[$x][$y][1]) && $routeIndex == 2) {
+                            if ($map[$x][$y][1] + $step < $minDistance) {
+                                $minDistance = $map[$x][$y][1] + $step;
+                            }
+                        }
                     }
-                    $map[$x][$y] = $routeIndex;
                 }
             }
         }
