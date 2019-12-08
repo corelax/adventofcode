@@ -11,7 +11,7 @@ class Solver2017_02Test extends TestCase
 {
     private $solver;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
