@@ -38,9 +38,9 @@ class Solver2019_02Test extends TestCase
         return $this->invoke($this->solver, 'dump', []);
     }
 
-    public function testSolvePart2()
-    {
-    }
+    // public function testSolvePart2()
+    // {
+    // }
 
     /**
      * invoke method anyway.
