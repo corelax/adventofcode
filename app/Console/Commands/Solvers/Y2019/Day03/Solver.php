@@ -9,6 +9,32 @@ class Solver
     {
         $routes = $this->parseInput($input);
 
+        return $this->getMinDistance($routes);
+    }
+
+    public function solvePart2(iterable $input): int
+    {
+        $this->parseInput($input);
+        return -1;
+    }
+
+    private function parseInput(iterable $input): array
+    {
+        $routes = [];
+        foreach ($input as $line) {
+            $route = [];
+            foreach (explode(',', $line) as $command) {
+                $route[] = ['d' => $command[0], 'l' => substr($command, 1)];
+            }
+            $routes[] = $route;
+        }
+
+        return $routes;
+    }
+
+    // only work with just 2 wires
+    private function getMinDistance(iterable $routes)
+    {
         $map = [];
         $minDistance = PHP_INT_MAX;
 
@@ -43,26 +69,6 @@ class Solver
         }
 
         return $minDistance;
-    }
-
-    public function solvePart2(iterable $input): int
-    {
-        $this->parseInput($input);
-        return -1;
-    }
-
-    private function parseInput(iterable $input): array
-    {
-        $routes = [];
-        foreach ($input as $line) {
-            $route = [];
-            foreach (explode(',', $line) as $command) {
-                $route[] = ['d' => $command[0], 'l' => substr($command, 1)];
-            }
-            $routes[] = $route;
-        }
-
-        return $routes;
     }
 
     private static function distance(int $x1, int $y1, int $x2, int $y2): int
