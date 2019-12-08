@@ -48,17 +48,4 @@ class Solver2019_03Test extends TestCase
             'U98,R91,D20,R16,D67,R40,U7,R15,U6,R7',
         ]));
     }
-
-    /**
-     * invoke method anyway.
-     */
-    private function invoke(Solver $obj, string $name, array $args)
-    {
-        $ref = new \ReflectionClass(Solver::class);
-        $method = $ref->getMethod($name);
-
-        $method->setAccessible(true);
-
-        return $method->invokeArgs($obj, $args);
-    }
 }
